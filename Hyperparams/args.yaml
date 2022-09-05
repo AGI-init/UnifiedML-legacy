@@ -1,0 +1,234 @@
+defaults:
+  - _self_
+  - task@_global_: atari/pong
+  - override hydra/job_logging: none
+
+# Agent
+obs_spec: ???  # To be specified later
+action_spec: ???  # To be specified later
+num_actions: 1
+standardize: true
+norm: true  # Note: ignored if standardizing
+trunk_dim: 50
+hidden_dim: 1024
+explore_steps: 2000
+lr: 1e-4
+lr_decay_epochs: null
+weight_decay: 0
+ema_decay: 0.99
+# Domains
+discrete: ???  # To be specified later, defaults per respective task
+online: true  # Reverse-Shorthand for offline
+offline: ${not:${online}}  # Defaults to true for classify tasks
+RL: true  # Defaults to false for classify tasks
+supervise: true
+generate: false
+# Environment
+Env: ???  # To be specified later, defaults per respective task
+env:
+  _target_: ${Env}
+  _recursive_: false
+Dataset: null  # Defaults per respective Classify task
+dataset:
+  _target_: ${Dataset}
+  _recursive_: false
+suite: ???  # To be specified later, defaults per respective task
+task_name: ???  # To be specified later, defaults per respective task
+frame_stack: 3
+truncate_episode_steps: 1000
+action_repeat: 1
+# Replay
+nstep: 10
+batch_size: 256
+discount: 0.99
+transform: null
+# Training
+seed_steps: 2000
+learn_per_steps: 2
+learn_steps_after: 20000
+# Evaluating
+evaluate_per_steps: 5000
+evaluate_episodes: 10
+ema: false
+# Saving
+save: true
+save_per_steps: 0
+save_path: ./Checkpoints/${experiment}/${format:${Agent}}/${environment.suite}/${task_name}_${seed}.pt
+load: false
+load_per_steps: 0
+# Logging
+log_video: ${generate}
+log_per_episodes: 1
+# Plotting
+plot_per_steps: 50000
+# Misc
+device: null
+parallel: false
+num_workers: 4
+# Experiment
+Agent: Agents.DQNAgent
+seed: 1
+experiment: Exp
+
+environment:
+  _target_: Datasets.Environment.Environment
+  _recursive_: false
+  env: ${env}
+  suite: ${suite}
+  task: ${task_name}
+  frame_stack: ${frame_stack}
+  truncate_episode_steps: ${truncate_episode_steps}
+  action_repeat: ${action_repeat}
+  offline: ${offline}
+  generate: ${generate}
+  seed: ${seed}
+
+agent:
+  _target_: ${Agent}
+  _recursive_: false
+  obs_spec: ${obs_spec}
+  action_spec: ${action_spec}
+  num_actions: ${num_actions}
+  trunk_dim: ${trunk_dim}
+  hidden_dim: ${hidden_dim}
+  standardize: ${standardize}
+  norm: ${norm}
+  recipes: ${recipes}
+  lr: ${lr}
+  lr_decay_epochs: ${lr_decay_epochs}
+  weight_decay: ${weight_decay}
+  ema_decay: ${ema_decay}
+  ema: ${ema}
+  explore_steps: ${explore_steps}
+  stddev_schedule: ${stddev_schedule} # Specified per task
+  stddev_clip: 0.3
+  discrete: ${discrete}
+  RL: ${RL}
+  supervise: ${supervise}
+  generate: ${generate}
+  device: ${device}
+  parallel: ${parallel}
+  log: ${offline}
+
+replay:
+  _target_: Datasets.ExperienceReplay.ExperienceReplay
+  _recursive_: false
+  batch_size: ${batch_size}
+  num_workers: ${num_workers}
+  capacity: 1000000
+  obs_spec: ${obs_spec}
+  action_spec: ${action_spec}
+  suite: ${suite}
+  task: ${task_name}
+  frame_stack: ${frame_stack}
+  nstep: ${nstep}
+  discount: ${discount}
+  transform: ${transform}
+  offline: ${offline}
+  generate: ${generate}
+  save: false
+  load: false
+  path: ./Datasets/ReplayBuffer/${experiment}/${format:${Agent}}/${environment.suite}/${task_name}_${seed}_Memories
+
+logger:
+  _target_: Logger.Logger
+  path: ./Benchmarking/${experiment}/${format:${Agent}}/${environment.suite}/
+  task: ${task_name}
+  seed: ${seed}
+  generate: ${generate}
+  aggregation: mean
+  wandb: false
+
+vlogger:
+  _target_: Vlogger.Vlogger
+  path: ${logger.path}${task_name}_${seed}_Video_Image
+  fps: 20
+  reel: ${generate}
+
+plotting:
+  _target_: Plot.plot
+  path: ./Benchmarking/${experiment}/Plots
+  plot_experiments: ${experiment}
+  plot_agents: null
+  plot_suites: null
+  plot_tasks: null
+  steps: ${train_steps}
+  write_tabular: false
+  plot_bar: true
+  plot_train: false
+  title: UnifiedML
+  x_axis: Step
+  verbose: false
+
+# Can optionally pass in custom architectures, optimizers, schedulers, etc.
+
+Aug: null  # Shorthand for recipes.aug._target_
+
+Eyes: null  # Shorthand for recipes.encoder.eyes._target_
+Pool: null  # Shorthand for recipes.encoder.pool._target_
+Trunk: null  # Shorthand for both trunks' _target_, does not have lowercase counterpart
+Pi_trunk: ${Trunk}  # Shorthand for recipes.actor.trunk._target_
+Q_trunk: ${Trunk}  # Shorthand for recipes.critic.trunk._target_
+Generator: null  # Shorthand for Pi_head --> recipes.actor.Pi_head._target_
+Discriminator: null  # Shorthand for Q_head --> recipes.critic.Q_head._target_
+Predictor: ${Generator}  # Shorthand for Pi_head --> recipes.actor.Pi_head._target_
+Pi_head: ${Predictor}  # Shorthand for recipes.actor.Pi_head._target_
+Q_head: ${Discriminator}  # Shorthand for recipes.critic.Q_head._target_
+
+Optim: null  # Shorthand for recipes.<block>.optim._target_ ,  e.g. python Run.py Optim=Utils.torch.optim.SGD
+Scheduler: null  # Shorthand for recipes.<block>.scheduler._target_
+
+# Shorthands for recipes
+aug:
+  _target_: ${Aug}
+eyes:
+  _target_: ${Eyes}
+pool:
+  _target_: ${Pool}
+pi_trunk:
+  _target_: ${Pi_trunk}
+generator:  # Shorthand for pi_head
+  _target_: ${Pi_head}
+predictor:  # Shorthand for pi_head
+  _default_: ${generator}
+pi_head:
+  _default_: ${predictor}
+q_trunk:
+  _target_: ${Q_trunk}
+discriminator:  # Shorthand for q_head
+  _target_: ${Q_head}
+q_head:
+  _default_: ${discriminator}
+optim:
+  _target_: ${Optim}
+scheduler:
+  _target_: ${Scheduler}
+
+# Recipes
+_recipes:
+  aug: ${aug}
+  encoder:
+    Eyes: ${eyes}
+    pool: ${pool}
+    optim: ${optim}
+    scheduler: ${scheduler}
+  actor:
+    trunk: ${pi_trunk}
+    Pi_head: ${pi_head}
+    optim: ${optim}
+    scheduler: ${scheduler}
+  critic:
+    trunk: ${q_trunk}
+    Q_head: ${q_head}
+    optim: ${optim}
+    scheduler: ${scheduler}
+
+recipes: ${allow_objects:${_recipes}}
+
+hydra:
+  output_subdir: ${logger.path}${task_name}_${seed}_Hydra
+  run:
+    dir: ./
+  sweep:
+    dir: ./
+    subdir: ./

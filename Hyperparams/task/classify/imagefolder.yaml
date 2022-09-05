@@ -1,0 +1,17 @@
+defaults:
+      - _self_
+    
+suite: classify
+train_steps: 200000
+stddev_schedule: 'linear(1.0,0.1,100000)'
+frame_stack: null
+action_repeat: null
+nstep: 0
+evaluate_per_steps: 1000
+evaluate_episodes: 1
+learn_per_steps: 1
+seed_steps: 50
+explore_steps: 0
+log_per_episodes: 10
+offline: true
+task_name: ImageFolder
