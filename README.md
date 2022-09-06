@@ -1011,19 +1011,19 @@ python Run.py -m task=atari/pong,classify/mnist seed=1,2,3
 
 [comment]: <> (The above will sweep over random seeds 1, 2, and 3, and whether to use EMA.)
 
-# :bar_chart: Agents & Performances
+[comment]: <> (# :bar_chart: Agents & Performances)
 
-# :interrobang: How is this possible
+[comment]: <> (# :interrobang: How is this possible)
 
-We use our new Creator framework to unify RL discrete and continuous action spaces, as elaborated in our [paper](https://arxiv.com).
+[comment]: <> (We use our new Creator framework to unify RL discrete and continuous action spaces, as elaborated in our [paper]&#40;https://arxiv.com&#41;.)
 
-Then we frame actions as "predictions" in supervised learning. We can even augment supervised learning with an RL phase, treating reward as negative error.
+[comment]: <> (Then we frame actions as "predictions" in supervised learning. We can even augment supervised learning with an RL phase, treating reward as negative error.)
 
-For generative modeling, well, it turns out that the difference between a Generator-Discriminator and Actor-Critic is rather nominal.
+[comment]: <> (For generative modeling, well, it turns out that the difference between a Generator-Discriminator and Actor-Critic is rather nominal.)
 
-[comment]: <> (![alt text]&#40;https://i.imgur.com/Yf8ltyI.png&#41;)
+[comment]: <> ([comment]: <> &#40;![alt text]&#40;https://i.imgur.com/Yf8ltyI.png&#41;&#41;)
 
-<img width="80%" alt="flowchart" src="https://i.imgur.com/nMUR9Ue.png">
+[comment]: <> (<img width="80%" alt="flowchart" src="https://i.imgur.com/nMUR9Ue.png">)
 
 [comment]: <> (</p>)
 
