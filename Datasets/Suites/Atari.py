@@ -86,7 +86,7 @@ class Atari:
         self.env.seed(seed)
 
         # Nature DQN-style pooling of last 2 frames
-        self.last_2_frame_pool = last_2_frame_pool  # Causing error?
+        self.last_2_frame_pool = last_2_frame_pool
         self.last_frame = None
 
         # Terminal on life loss

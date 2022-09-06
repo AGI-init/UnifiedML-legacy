@@ -1035,18 +1035,19 @@ In progress...
 
 All files are designed for pedagogical clarity and extendability for research, to be useful for educational and innovational purposes, with simplicity at heart.
 
-# :people_holding_hands: Contributing
+[comment]: <> (# :people_holding_hands: Contributing)
 
-Please support financially: <br>
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=flat-square)](https://www.paypal.com/cgi-bin/) <br>
+[comment]: <> (Please support financially: <br>)
 
-We are a nonprofit, single-PhD student team. If possible, compute resources appreciated.
+[comment]: <> ([![Donate]&#40;https://img.shields.io/badge/Donate-PayPal-green.svg?style=flat-square&#41;]&#40;https://www.paypal.com/cgi-bin/&#41; <br>)
 
-[comment]: <> (Our work will go towards helping nature through AI, making academic-level research accessible to all, and simplifying, bridging, and unifying the vast array of problem domains in our field.)
+[comment]: <> (We are a nonprofit, single-PhD student team. If possible, compute resources appreciated.)
 
-Feel free to [contact **agi.\_\_init\_\_**](mailto:agi.init@gmail.com).
+[comment]: <> ([comment]: <> &#40;Our work will go towards helping nature through AI, making academic-level research accessible to all, and simplifying, bridging, and unifying the vast array of problem domains in our field.&#41;)
 
-I am always looking for collaborators. Don't hesitate to volunteer in any way to help realize the full potential of this library.
+[comment]: <> (Feel free to [contact **agi.\_\_init\_\_**]&#40;mailto:agi.init@gmail.com&#41;.)
+
+[comment]: <> (I am always looking for collaborators. Don't hesitate to volunteer in any way to help realize the full potential of this library.)
 
 # Note
 
