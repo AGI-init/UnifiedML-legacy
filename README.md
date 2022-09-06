@@ -1011,7 +1011,9 @@ python Run.py -m task=atari/pong,classify/mnist seed=1,2,3
 
 [comment]: <> (The above will sweep over random seeds 1, 2, and 3, and whether to use EMA.)
 
-[comment]: <> (# :bar_chart: Agents & Performances)
+# :bar_chart: Agents & Performances
+
+In progress...
 
 [comment]: <> (# :interrobang: How is this possible)
 
