@@ -802,7 +802,7 @@ python Run.py task=classify/mnist Eyes=Identity Predictor=Perceiver +predictor.d
 
 
 ```console
-python Run.py experiment='Q-Learning-Target_expected+entropy_Intensity+Shift' Aug=Sequential +aug._targets_="[IntensityAug, RandomShiftsAug]" +aug.scale=0.05 +aug.pad=4
+python Run.py Aug=Sequential +aug._targets_="[IntensityAug, RandomShiftsAug]" +aug.scale=0.05 aug.pad=4
 ```
 
 </details>
