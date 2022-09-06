@@ -857,7 +857,7 @@ python Run.py task=classify/mnist Q_trunk=Transformer Pi_trunk=Transformer Pool=
 Here is a nice example of the critic using a small CNN for downsampling features:
 
 ```console
-python Run.py task=classify/mnist Q_trunk=CNN +q_trunk.depth=1
+python Run.py task=dmc/cheetah_run Q_trunk=CNN +q_trunk.depth=1 pool=identity
 ```
 
 A CNN Actor and Critic:
@@ -950,7 +950,7 @@ Learning rate schedulers can also be customized as well with ```scheduler=``` an
 </summary>
 <br>
 
-For the best tutorial on Custom Datasets, see our full [end-to-end example]() of Crystalographic-Structure-And-Space-Group classification, in which we fully reproduce the [paper on classifying crystal structures and space groups from X-ray diffraction patterns]() in a single succinct file with some UnifiedML commands. The custom Crystal & Space Groups dataset will be downloaded automatically in the example.
+For the best tutorial on Custom Datasets, see our full [end-to-end example](https://www.github.com/agi-init/XRD) of Crystalographic-Structure-And-Space-Group classification, in which we fully reproduce the [paper on classifying crystal structures and space groups from X-ray diffraction patterns]() in a single succinct file with some UnifiedML commands. The custom Crystal & Space Groups dataset will be downloaded automatically in the example.
 
 > &#9432; Note that this dataset consists of *1-dimensional* data that is read into a 1D CNN and MLPs. UnifiedML architectures like CNN and MLP are **dimensionality-adaptive**! 
 > 

@@ -22,7 +22,7 @@ from Losses import QLearning, PolicyLearning, SelfSupervisedLearning
 
 class AC2Agent(torch.nn.Module):
     """Actor Critic Creator (AC2) - Best of all worlds
-    Ensemble-learning w/ multiple critics/actors for RL, classification, and generative modeling; re-sampling"""
+    Dynamics-learning w/ multiple critics/actors for RL, classification, and generative modeling; re-sampling"""
     def __init__(self,
                  obs_spec, action_spec, num_actions, trunk_dim, hidden_dim, standardize, norm, recipes,  # Architecture
                  lr, lr_decay_epochs, weight_decay, ema_decay, ema,  # Optimization
