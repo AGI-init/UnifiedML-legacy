@@ -815,7 +815,7 @@ python Run.py Aug=Sequential +aug._targets_="[IntensityAug, RandomShiftsAug]" +a
 </summary>
 <br>
 
-A rich and expressive command line syntax is available for selecting and customizing architectures such as those defined in ```./Blocks/Architectures```.
+A rich and expressive command line syntax is available for selecting and customizing architectures such as those defined in [```./Blocks/Architectures```](Blocks/Architectures).
 
 ResNet18 on CIFAR-10:
 
@@ -909,7 +909,7 @@ The parser automatically registers the imports/class paths in ```Utils.``` in bo
 
 Of course, it's always possible to just modify the library code itself, which may be easier depending on your use case. The code is designed to be clear for educational and innovational purposes alike.
 
-To make your own architecture mix-and-matchable, just put it in a pytorch module with initialization options for ```input_shape``` and ```output_dim```, as in the architectures in ```./Blocks/Architectures```.
+To make your own architecture mix-and-matchable, just put it in a pytorch module with initialization options for ```input_shape``` and ```output_dim```, as in the architectures in [```./Blocks/Architectures```](Blocks/Architectures).
 
 </details>
 
