@@ -762,7 +762,7 @@ python Run.py task=classify/mnist Pool=Residual +pool.model=Transformer +pool.de
 ```
 
 ```console
-python Run.py task=classify/mnist Pool=Sequential +pool._targets_="[ChannelSwap, Residual]" +'pool.model="MLP(kwargs.input_shape[-1])"' +'pool.down_sample="MLP(input_shape=kwargs.input_shape[-1], output_dim=kwargs.output_shape[-1])"'
+python Run.py task=classify/mnist Pool=Sequential +pool._targets_="[ChannelSwap, Residual]" +'pool.model="MLP(kwargs.input_shape[-1])"' +'pool.down_sample="MLP(input_shape=kwargs.input_shape[-1])"'
 ```
 
 ```console
@@ -949,6 +949,14 @@ Learning rate schedulers can also be customized as well with ```scheduler=``` an
 :mag: <i>Click to read/parse</i>
 </summary>
 <br>
+
+You can pass in a Pytorch Dataset class as follows:
+
+```console
+python Run.py task=classify/custom Dataset=Datasets.Suites._TinyImageNet.TinyImageNet
+```
+
+This will initiate classification on the TinyImageNet dataset located in [./Datasets/Suites/_TinyImageNet.py](Datasets/Suites/_TinyImageNet.py). 
 
 For the best tutorial on Custom Datasets, see our full [end-to-end example](https://www.github.com/agi-init/XRD) of Crystalographic-Structure-And-Space-Group classification, in which we fully reproduce the [paper on classifying crystal structures and space groups from X-ray diffraction patterns]() in a single succinct file with some UnifiedML commands. The custom Crystal & Space Groups dataset will be downloaded automatically in the example.
 
