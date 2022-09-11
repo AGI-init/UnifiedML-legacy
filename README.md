@@ -857,7 +857,7 @@ python Run.py task=classify/mnist Q_trunk=Transformer Pi_trunk=Transformer Pool=
 Here is a nice example of the critic using a small CNN for downsampling features:
 
 ```console
-python Run.py task=dmc/cheetah_run Q_trunk=CNN +q_trunk.depth=1 pool=identity
+python Run.py task=dmc/cheetah_run Q_trunk=CNN +q_trunk.depth=1 pool=Identity
 ```
 
 A CNN Actor and Critic:
@@ -875,7 +875,7 @@ python Run.py Q_trunk=CNN Pi_trunk=CNN +q_trunk.depth=1 +pi_trunk.depth=1 Pool=I
 
 [comment]: <> (```)
 
-[comment]: <> (python Run.py Eyes=Utils.load +recipes.encoder.eyes.path=<path> +recipes.encoder.eyes.attr=encoder.Eyes)
+[comment]: <> (python Run.py Eyes=Utils.load +eyes.path=<path> +eyes.attr=encoder.Eyes)
 
 [comment]: <> (```)
 
@@ -888,7 +888,7 @@ python Run.py Q_trunk=CNN Pi_trunk=CNN +q_trunk.depth=1 +pi_trunk.depth=1 Pool=I
 *A little secret*, but pytorch code can be passed directly too via quotes:
 
 ```console
-python Run.py "recipes.encoder.eyes='CNN(kwargs.input_shape,32,depth=3)'"
+python Run.py "eyes='CNN(kwargs.input_shape,32,depth=3)'"
 ```
 ```console
 python Run.py "eyes='torch.nn.Conv2d(kwargs.input_shape[0],32,kernel_size=3)'"
@@ -964,15 +964,17 @@ python Run.py task=classify/custom Dataset=Datasets.Suites._TinyImageNet.TinyIma
 
 This will initiate a classify task on the custom-defined [```TinyImageNet```](Datasets/Suites/_TinyImageNet.py#L48) Dataset located in [./Datasets/Suites/_TinyImageNet.py](Datasets/Suites/_TinyImageNet.py). 
 
-By default, the task name will appear as the Dataset class name (in the above examples, ```MNIST``` and ```TinyImageNet```). You can customize the task name as it's saved for benchmarking and plotting, with ```task_name=```.
+By default, the task name will appear as the Dataset class name (in the above examples, ```MNIST``` and ```TinyImageNet```). You can change the task name as it's saved for benchmarking and plotting, with ```task_name=```.
+
+:exclamation: UnifiedML is compatible with datasets & domains beyond Vision.
 
 <details>
 <summary>
-<i><b>UnifiedML is compatible with datasets & domains beyond Vision - Click for more details.</b></i>
+<i>More details :open_book:</i>
 </summary>
 <br>
 
-For a tutorial outside of Vision, see our full [end-to-end example](https://www.github.com/agi-init/XRD) of Crystalographic-Structure-And-Space-Group classification, in which we fully reproduce the [paper on classifying crystal structures and space groups from X-ray diffraction patterns]() in a single succinct file with some UnifiedML commands. The custom Crystal & Space Groups dataset will be downloaded automatically in the example.
+For a non-Vision tutorial, see our full [end-to-end example](https://www.github.com/agi-init/XRD) of Crystalographic-Structure-And-Space-Group classification, in which we fully reproduce the [paper on classifying crystal structures and space groups from X-ray diffraction patterns]() in a single succinct file with some UnifiedML commands. The custom Crystal & Space Groups dataset will be downloaded automatically in the example.
 
 > &#9432; Note that this dataset consists of *1-dimensional* data that is read into a 1D CNN and MLPs. UnifiedML architectures like CNN and MLP are **dimensionality-adaptive**! See [paper]() Section 3.6 for details about architecture adaptivity.
 
