@@ -88,7 +88,8 @@ class ExperienceReplay:
 
         self.nstep = nstep * int(not (suite == 'classify' or generate))  # No nstep for classify, generate
 
-        self.num_workers = max(1, min(num_workers, os.cpu_count()))
+        # CPU pre-loading for offline
+        self.num_workers = 1 if offline else max(1, min(num_workers, os.cpu_count()))
 
         assert len(self) >= self.num_workers or not offline, f'num_workers ({self.num_workers}) ' \
                                                              f'exceeds offline replay size ({len(self)})'

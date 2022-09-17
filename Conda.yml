@@ -17,7 +17,7 @@ dependencies:
       - torchaudio==0.11.0
       - hydra-core==1.1.0
       - hydra-submitit-launcher==1.1.5
-      - gym==0.24.0
+      - gym==0.25.0
       - ale-py==0.7.5
       - dm_control==1.0.3
       - PyOpenGL-accelerate==3.1.5
