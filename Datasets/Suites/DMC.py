@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # MIT_LICENSE file in the root directory of this source tree.
 import os
+import warnings
 from collections import deque
 
 from dm_env import StepType
@@ -30,8 +31,8 @@ class DMC:
 
     Recommended: Discrete environments should have a conversion strategy for adapting continuous actions (e.g. argmax)
 
-    An "exp" (experience) is an AttrDict consisting of "obs", "action" (prior to adapting), "reward", "label", "step"
-    numpy values which can be NaN. Must include a batch dim.
+    An "exp" (experience) is an AttrDict consisting of "obs", "action" (prior to adapting), "reward", and "label"
+    as numpy arrays with batch dim or None. "reward" is an exception: should be numpy array, can be empty/scalar/batch.
 
     ---
 
@@ -55,11 +56,14 @@ class DMC:
 
         from dm_control.suite.wrappers import action_scale, pixels
 
+        warnings.filterwarnings("ignore", message='.* is deprecated and will be removed in Pillow 10')
+
         domain, task = task.split('_', 1)
+        domain = 'ball_in_cup' if domain == 'cup' else domain  # Overwrite cup to ball_in_cup
 
         # Load task
         if (domain, task) in suite.ALL_TASKS:
-            self.env = suite.load('ball_in_cup' if domain == 'cup' else domain,  # Overwrite cup to ball_in_cup
+            self.env = suite.load(domain,
                                   task,
                                   task_kwargs={'random': seed},
                                   visualize_reward=False)  # Don't visualize reward
@@ -113,7 +117,7 @@ class DMC:
         action.shape = self.action_spec['shape']
 
         # Step env
-        reward = 0
+        reward = np.zeros([])
         for _ in range(self.action_repeat):
             time_step = self.env.step(action)
             reward += time_step.reward
@@ -121,20 +125,14 @@ class DMC:
             if self.episode_done:
                 break
 
+        obs = time_step.observation[self.key].copy()  # DMC returns numpy arrays with negative strides, need to copy
+
         # Create experience
-        exp = {'obs': time_step.observation[self.key], 'action': action, 'reward': reward,
-               'label': None, 'step': None}
+        exp = {'obs': obs, 'action': action, 'reward': reward, 'label': None}
         # Add batch dim
         exp['obs'] = np.expand_dims(exp['obs'], 0)
         # Channel-first
         exp['obs'] = exp['obs'].transpose(0, 3, 1, 2)
-
-        # Scalars/NaN to numpy
-        for key in exp:
-            if np.isscalar(exp[key]) or exp[key] is None or type(exp[key]) == bool:
-                exp[key] = np.full([1, 1], exp[key], dtype=getattr(exp[key], 'dtype', 'float32'))
-            elif len(exp[key].shape) in [0, 1]:  # Add batch dim
-                exp[key].shape = (1, *(exp[key].shape or [1]))
 
         self.exp = AttrDict(exp)  # Experience
 
@@ -151,20 +149,14 @@ class DMC:
         time_step = self.env.reset()
         self.episode_done = False
 
+        obs = time_step.observation[self.key].copy()  # DMC returns numpy arrays with negative strides, need to copy
+
         # Create experience
-        exp = {'obs': time_step.observation[self.key], 'action': None, 'reward': time_step.reward,
-               'label': None, 'step': None}
+        exp = {'obs': obs, 'action': None, 'reward': time_step.reward, 'label': None}
         # Add batch dim
         exp['obs'] = np.expand_dims(exp['obs'], 0)
         # Channel-first
         exp['obs'] = exp['obs'].transpose(0, 3, 1, 2)
-
-        # Scalars/NaN to numpy
-        for key in exp:
-            if np.isscalar(exp[key]) or exp[key] is None or type(exp[key]) == bool:
-                exp[key] = np.full([1, 1], exp[key], dtype=getattr(exp[key], 'dtype', 'float32'))
-            elif len(exp[key].shape) in [0, 1]:  # Add batch dim
-                exp[key].shape = (1, *(exp[key].shape or [1]))
 
         # Reset frame stack
         self.frames.clear()
@@ -180,6 +172,6 @@ class DMC:
 # Access a dict with attribute or key (purely for aesthetic reasons)
 class AttrDict(dict):
     def __init__(self, _dict):
-        super(AttrDict, self).__init__()
+        super().__init__()
         self.__dict__ = self
         self.update(_dict)

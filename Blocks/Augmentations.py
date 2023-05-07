@@ -2,23 +2,25 @@
 #
 # This source code is licensed under the MIT license found in the
 # MIT_LICENSE file in the root directory of this source tree.
+import warnings
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
 class RandomShiftsAug(nn.Module):
-    def __init__(self, pad):
+    def __init__(self, pad=4):
         super().__init__()
         self.pad = pad
 
     def forward(self, obs):
         # Operates on last 3 dims of x, preserves leading dims
         shape = obs.shape
-        assert len(shape) > 3, f'Obs shape {tuple(shape)} not supported by this augmentation, try \'aug=Identity\''
+        assert len(shape) > 3, f'Obs shape {tuple(shape)} not supported by this augmentation, try \'Aug=Identity\''
         obs = obs.view(-1, *shape[-3:])
         n, c, h, w = obs.size()
-        assert h == w, f'Height≠width ({h}≠{w}), obs shape not supported by this augmentation, try \'aug=Identity\''
+        assert h == w, f'Height≠width ({h}≠{w}), obs shape not supported by this augmentation, try \'Aug=Identity\''
         padding = tuple([self.pad] * 4)
         obs = F.pad(obs, padding, 'replicate')
         eps = 1.0 / (h + 2 * self.pad)
@@ -39,10 +41,21 @@ class RandomShiftsAug(nn.Module):
         shift *= 2.0 / (h + 2 * self.pad)
 
         grid = base_grid + shift
+
+        device = obs.device.type
+
+        if device == 'mps':
+            # M1 Macs don't support grid_sample (https://github.com/pytorch/pytorch/pull/94273)
+            warnings.warn('F.grid_sample not supported on M1 Mac MPS by Pytorch. Temporarily using CPU for '
+                          'RandomShiftsAug. Alternately, try Aug=Identity or a different augmentation.')
+
+            obs, grid = obs.to('cpu'), grid.to('cpu')
+
         output = F.grid_sample(obs,
                                grid,
                                padding_mode='zeros',
-                               align_corners=False)
+                               align_corners=False).to(device)
+
         return output.view(*shape[:-3], *output.shape[-3:])
 
 

@@ -1,6 +1,6 @@
 defaults:
-      - _self_
- 
+  - _self_
+
 Env: Datasets.Suites.DMC.DMC
 suite: dmc
 task_name: walker_walk

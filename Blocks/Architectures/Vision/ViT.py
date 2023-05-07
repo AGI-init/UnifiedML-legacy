@@ -19,17 +19,21 @@ class ViT(nn.Module):
     Generalized to adapt to arbitrary temporal-spatial dimensions, assumes channels-first
     """
     def __init__(self, input_shape=(32, 7, 7), out_channels=32, patch_size=4, num_heads=None, depth=3, emb_dropout=0.1,
-                 query_key_dim=None, mlp_hidden_dim=None, dropout=0.1, pool_type='cls', output_dim=None, fourier=False):
+                 query_key_dim=None, mlp_hidden_dim=None, dropout=0.1, pool_type='cls', output_shape=None, fourier=False):
         super().__init__()
 
-        # Convolve into patches - assumes image/input spatial dims dividable by patch size(s)
+        output_dim = Utils.prod(output_shape)
+
+        self.num_axes = len(input_shape)
+
+        # Convolve into patches - image/input spatial dims should ideally be dividable by patch size(s)
         self.Vi = CNN(input_shape, out_channels, 0, last_relu=False, kernel_size=patch_size, stride=patch_size)
         shape = Utils.cnn_feature_shape(input_shape, self.Vi)
 
         positional_encodings = (LearnableFourierPositionalEncodings if fourier
                                 else LearnablePositionalEncodings)(shape)
 
-        token = CLSToken(shape)
+        token = CLSToken(shape)  # Just appends a parameterized token
         shape = Utils.cnn_feature_shape(shape, token)
 
         # Positional encoding -> CLS Token -> Attention layers
@@ -53,10 +57,10 @@ class ViT(nn.Module):
     def forward(self, *x):
         patches = self.Vi(*x)
 
-        # Conserve leading dims, operate on last 3 dims
-        lead_dims = patches.shape[:-3]
+        # Conserve leading dims, operate on batch-item dims
+        lead_dims = patches.shape[:-self.num_axes]
 
-        outs = self.T(patches.flatten(0, -4))
+        outs = self.T(patches.flatten(0, -self.num_axes - 1))
 
         # Restore lead shape
         return outs.view(*lead_dims, *outs.shape[1:])
@@ -81,7 +85,7 @@ class CLSToken(nn.Module):
     def __init__(self, input_shape=(32,)):
         super().__init__()
 
-        in_channels = input_shape if isinstance(input_shape, int) else input_shape[0]
+        in_channels, *self.spatial_dims = input_shape
 
         self.token = nn.Parameter(torch.randn(in_channels, 1))
 
@@ -89,11 +93,11 @@ class CLSToken(nn.Module):
         return c, math.prod(_) + 1
 
     def forward(self, obs):
-        return torch.cat([obs.flatten(-2), self.token.expand(*obs.shape[:-2], 1)], dim=-1)  # Assumes 2 spatial dims
+        return torch.cat([obs.flatten(-len(self.spatial_dims)), self.token.expand(*obs.shape[:-len(self.spatial_dims)], 1)], dim=-1)  # Assumes 2 spatial dims
 
 
 class CLSPool(nn.Module):
-    """Selects the CLS token as the representative embedding, assuming channels-first"""
+    """Selects (indexes) the CLS token as the representative embedding, assuming channels-first"""
     def __init__(self, **_):
         super().__init__()
 

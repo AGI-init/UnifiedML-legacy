@@ -1,30 +1,12 @@
-![alt text](https://i.imgur.com/rjw4eFg.png)
-
-[comment]: <> ([![]&#40;https://img.shields.io/badge/State_of_the_Art-Data--Efficient_RL-blue.svg??style=flat&logo=google-analytics&#41;]&#40;&#41;<br>)
-
-[comment]: <> ([![]&#40;https://img.shields.io/badge/Modern,_Academic--Standard-Image_Classification-blue.svg??style=flat&logo=instatus&#41;]&#40;&#41;<br>)
-
-[comment]: <> ([![]&#40;https://img.shields.io/badge/Technically--Working-Generative_Modeling-blue.svg??style=flat&logo=angellist&#41;]&#40;&#41;<br>)
-
-[comment]: <> ([![]&#40;https://img.shields.io/badge/In--Progress-Multi_Modalities-red.svg??style=flat&logo=plex&#41;]&#40;&#41;<br>)
-
-[comment]: <> ([![]&#40;https://img.shields.io/badge/Unified_in_one_Framework-Seamless,_General.svg??style=flat&logo=immer&#41;]&#40;&#41;)
+![alt text](https://i.imgur.com/Ya9FpIJ.png)
 
 ### Quick Links
 
 - [Setup](#wrench-setting-up)
 
-- [Examples](#mag-full-tutorials)
+- [Tutorial](#mag-full-tutorials)
 
 - [Agents and performances](#bar_chart-agents--performances)
-
-[comment]: <> (- [How Is This Possible?]&#40;#interrobang-how-is-this-possible&#41;)
-
-[comment]: <> (- [Contributing]&#40;#people_holding_hands-contributing&#41; &#40;Best way: [please donate]&#40;&#41;!&#41;)
-
-[comment]: <> (# )
-
-[comment]: <> (> A library for **reinforcement learning**, **supervised learning**, and **generative modeling**. And eventually, full-general intelligence.)
 
 # :runner: Running The Code
 
@@ -36,7 +18,7 @@ python Run.py
 
 Defaults:
 
-```Agent=Agents.DQNAgent```
+```Agent=Agents.AC2Agent```
 
 ```task=atari/pong```
 
@@ -56,52 +38,14 @@ Drink up! :beers:
 
 For detailed documentation, [see our :scroll:](https://arxiv.com).
 
-[comment]: <> ([![arXiv]&#40;https://img.shields.io/badge/arXiv-<NUMBER>.<NUMBER>-b31b1b.svg?style=flat&#41;]&#40;https://arxiv.org/abs/<NUMBER>.<NUMBER>&#41;)
-
-[comment]: <> (```)
-
-[comment]: <> (@inproceedings{cool,)
-
-[comment]: <> (  title={bla},)
-
-[comment]: <> (  author={Sam Lerman and Chenliang Xu},)
-
-[comment]: <> (  booktitle={bla},)
-
-[comment]: <> (  year={2022},)
-
-[comment]: <> (  url={https://openreview.net})
-
-[comment]: <> (})
-
-[comment]: <> (```)
-
 ```bibtex
-@article{cool,
+@article{in-progress,
   title   = {UnifiedML: A Unified Framework For Intelligence Training},
-  author  = {Lerman, Sam and Xu, Chenliang},
-  journal = {arXiv preprint arXiv:2203.08913},
-  year    = {2022}
+  author  = {Sam Lerman, Chenliang Xu},
+  journal = {arXiv preprint},
+  year    = {2023}
 }
 ```
-
-[comment]: <> (```bibtex)
-
-[comment]: <> (@inproceedings{UML,)
-
-[comment]: <> (  title={UnifiedML: A Unified Framework For Intelligence Training},)
-
-[comment]: <> (  author={Lerman, Sam and Xu, Chenliang},)
-
-[comment]: <> (  booktitle={booktitle},)
-
-[comment]: <> (  year={2022},)
-
-[comment]: <> (  url={https://openreview.net})
-
-[comment]: <> (})
-
-[comment]: <> (```)
 
 If you use this work, please give us a star :star: and be sure to cite the above!
 
@@ -111,9 +55,7 @@ An acknowledgment to [Denis Yarats](https://github.com/denisyarats), whose excel
 
 Yes.
 
-All agents support discrete and continuous control, classification, and generative modeling.
-
-[comment]: <> (All agents and even tasks support discrete and continuous control, online and offline RL, imitation learning, classification, regression, and generative modeling.)
+Our ```AC2Agent``` supports discrete and continuous control, classification, generative modeling, and more.
 
 See example scripts of various configurations [below](#mag-full-tutorials).
 
@@ -136,32 +78,6 @@ All dependencies can be installed via [Conda](https://docs.conda.io/en/latest/mi
 conda env create --name ML --file=Conda.yml
 ```
 
-[comment]: <> (For GPU support, you may have to [pip install Pytorch]&#40;&#41; depending on your CUDA version.)
-
-[comment]: <> (> CUDA 11.6 example: `pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116`  )
-
-[comment]: <> (:tada:)
-
-[comment]: <> (:tada: Got me some dependencies :tada:)
-
-[comment]: <> (For CUDA 11+, also try:)
-
-[comment]: <> (```console)
-
-[comment]: <> (# 11.3)
-
-[comment]: <> (pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113)
-
-[comment]: <> (# 11.6)
-
-[comment]: <> (pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116)
-
-[comment]: <> (```)
-
-[comment]: <> (See [here]&#40;https://pytorch.org/get-started/locally/&#41;.)
-
-[comment]: <> (as per the [Pytorch installation instructions]&#40;https://pytorch.org/get-started/locally/&#41;.)
-
 ## 3. Activate Your Conda Env.
 
 ```console
@@ -170,20 +86,13 @@ conda activate ML
 
 #
 
-> &#9432; Depending on your CUDA version, you may need to additionally install Pytorch with CUDA via pip from [pytorch.org/get-started](https://pytorch.org/get-started/locally/) after activating your Conda environment.
+> > &#9432; Depending on your CUDA version, you may need to redundantly install Pytorch with CUDA from [pytorch.org/get-started](https://pytorch.org/get-started/locally/) after activating your Conda environment.
 >
 > For example, for CUDA 11.6:
 > ```console
-> pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+> pip uninstall torch torchvision torchaudio
+> pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 > ```
-
-[comment]: <> (For GPU support, you may need to install Pytorch with CUDA from https://pytorch.org/get-started/locally/.)
-
-[comment]: <> (```console)
-
-[comment]: <> (conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch)
-
-[comment]: <> (```)
 
 # :joystick: Installing The Suites
 
@@ -194,17 +103,16 @@ conda activate ML
 <br><i>A collection of retro Atari games.</i>
 </p>
 
-You can install via ```AutoROM``` if you accept the license.
+You can install via ```AutoROM``` if you accept the license. First install ```AutoROM```.
 
 ```console
 pip install autorom
-AutoROM --accept-license
 ```
-Then:
+
+Then accept the license.
+
 ```console
-mkdir ./Datasets/Suites/Atari_ROMS
-AutoROM --install-dir ./Datasets/Suites/Atari_ROMS
-ale-import-roms ./Datasets/Suites/Atari_ROMS
+AutoROM --accept-license
 ```
 
 ## 2. DeepMind Control
@@ -223,64 +131,20 @@ Comes pre-installed! For any issues, consult the [DMC repo](https://github.com/d
 
 <p align="left">
 
-[comment]: <> (<img src="https://i.imgur.com/F633xwk.png" width="320">)
-
-[comment]: <> (<br><i>Alpaca or llama? Donkey or mule? Roses or kale? — iNaturalist</i><br><br>)
 <img src="https://i.imgur.com/N1st6uO.png" width="320">
 <br><i>Eight different ladybug species in the iNaturalist dataset.</i>
 
-[comment]: <> (<br><br>)
-
-[comment]: <> (<img src="https://i.imgur.com/etoaz2b.png" width="320">)
-
-[comment]: <> (<br><i>Samples of images from the CIFAR-100 dataset.</i>)
-
-[comment]: <> (<br><br><img src="https://i.imgur.com/E1v1jvm.jpg" width="320">)
-
-[comment]: <> (<br><i>Samples of images from the Tiny-ImageNet dataset.</i>)
 </p>
-
-[comment]: <> (Comes preinstalled.)
-
-[comment]: <> (No additional preparation needed. All datasets download automatically.)
 
 [All datasets](Hyperparams/task/classify) come ready-to-use :white_check_mark:
 
-[comment]: <> (<hr class="solid">)
-
-That's it. 
-
-[comment]: <> (~)
+That's it.
 
 > :bulb: Train Atari example: ```python Run.py task=atari/mspacman```
 >
 > :bulb: Train DMC example: ```python Run.py task=dmc/cheetah_run```
 >
 > :bulb: Train Classify example: ```python Run.py task=classify/mnist```
-
-[comment]: <> (:point_right:)
-
-
-[comment]: <> (> :bulb: **Train Atari example**: ```python Run.py task=atari/mspacman```)
-
-[comment]: <> (>)
-
-[comment]: <> (> :bulb: **Train DMC example**: ```python Run.py task=dmc/cheetah_run```)
-
-[comment]: <> (>)
-
-[comment]: <> (> :bulb: **Train Classify example**: ```python Run.py task=classify/mnist```)
-
-[comment]: <> (<hr>)
-
-
-[comment]: <> (> > :bulb: **Train GAN example**: ```python Run.py task=classify/mnist generate=true```)
- 
-[comment]: <> (<hr class="solid">)
-
-[comment]: <> (All datasets come preinstalled :white_check_mark:)
-
-[comment]: <> (#)
 
 # :file_cabinet: Key files
 
@@ -289,14 +153,6 @@ That's it.
 ```Environment.py``` handles rollouts.
 
 ```./Agents``` contains self-contained agents.
-
-[comment]: <> (```Run.py``` handles learning and evaluation loops, saving, distributed training, logging, plotting :play_or_pause_button: :repeat:)
-
-[comment]: <> (:earth_africa: ```Environment.py``` handles rollouts)
-
-[comment]: <> (:robot: ```./Agents``` contains self-contained agents :alien: :space_invader:)
- 
-[comment]: <> (<hr>)
 
 #
 
@@ -310,66 +166,48 @@ That's it.
 </summary>
 <br>
 
-[comment]: <> (* Achieves [top scores]&#40;#bar_chart-agents--performances&#41; in data-efficient RL across Atari and DMC.)
-
-[comment]: <> (❖)
-**Train a** [```DQN Agent```](Agents/DQN.py) **to play Ms. Pac-Man**:
+**Train** [```DQN Agent```](Agents/DQN.py) **to play Ms. Pac-Man**:
 
 ```console
 
-python Run.py task=atari/mspacman
+python Run.py task=atari/mspacman Agent=Agents.DQNAgent
 
 ```
 
-[comment]: <> (* This agent is the library's default &#40;```Agent=```[```Agents.DQNAgent```]&#40;Agents/DQN.py&#41;&#41;.)
-* This agent is the library's default (```Agent=Agents.DQNAgent```).
-* Our implementation expands on [ensemble Q-learning](https://arxiv.org/abs/1802.09477v3) with [data regularization](https://arxiv.org/pdf/2004.13649.pdf) and [Soft-DQN](https://arxiv.org/pdf/2007.14430.pdf) ([```here```](Losses/QLearning.py#L43)).
+
+* Our implementation expands on [ensemble Q-learning](https://arxiv.org/abs/1802.09477v3) with [data regularization](https://arxiv.org/pdf/2004.13649.pdf) and [Soft-DQN](https://arxiv.org/pdf/2007.14430.pdf).
 * [Original Nature DQN paper](https://web.stanford.edu/class/psych209/Readings/MnihEtAlHassibis15NatureControlDeepRL.pdf).
 
 ——❖——
 
-[comment]: <> (Maybe put below in collapsed)
-
 **Humanoid from pixels** with [```DrQV2 Agent```](Agents/DrQV2.py), [a state of the art algorithm for continuous control from images](https://arxiv.org/abs/2107.09645):
 ```console
-python Run.py Agent=Agents.DrQV2Agent task=dmc/humanoid_walk
+python Run.py task=dmc/humanoid_walk Agent=Agents.DrQV2Agent
 ```
 
-[comment]: <> (❖)
+⋆⋅☆⋅⋆
 
-**For self-supervision**, [```SPR Agent```](Agents/SPR.py) in Atari:
+**Play Super Mario Bros.** with [```Dueling DQN Agent```](Agents/DuelingDQN.py), an extension of DQN that uses [dueling Q networks](https://arxiv.org/abs/1511.06581):
 ```console
-python Run.py Agent=Agents.SPRAgent task=atari/boxing
+python Run.py task=mario Agent=Agents.DuelingDQNAgent
 ```
 
-The [original SPR paper](https://arxiv.org/abs/2007.05929) used a [Rainbow](https://arxiv.org/pdf/1710.02298.pdf) backbone. We use a weaker [DQN](https://web.stanford.edu/class/psych209/Readings/MnihEtAlHassibis15NatureControlDeepRL.pdf) backbone for now for the sake of simplicity.
+•⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼✧ ☼ 𖥸 ☽ ✧⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽•
 
-[comment]: <> ([AC2]&#40;paper&#41; Agent in DMC:)
+**The library's default Agent** is our [```AC2 Agent```](Agents/Lermanbots/AC2.py) (```Agent=Agents.AC2Agent```).
 
-**When in doubt**: our [```AC2 Agent```](Agents/Lermanbots/AC2.py). Pretty much the best of all worlds among this collection of algorithms.
 ```console
-python Run.py Agent=Agents.AC2Agent task=dmc/walker_walk +agent.depth=5 +agent.num_actors=5 +agent.num_critics=5 nstep=5
+python Run.py
 ```
 
-```+agent.depth=5``` activates a self-supervisor to predict temporal dynamics for up to 5 timesteps ahead.
+* ```+agent.depth=5``` can activate a self-supervisor to predict temporal dynamics for a number of timesteps ahead, similar to [Dreamer](https://arxiv.org/pdf/2301.04104v1.pdf) and [SPR](https://arxiv.org/abs/2007.05929).
+* ```+agent.num_actors=5 +agent.num_critics=5``` can activate actor-critic ensembling.
 
-```+agent.num_actors=5 +agent.num_critics=5``` activates actor-critic ensembling.
-
-[comment]: <> (——❖——)
-
-[comment]: <> (#)
-
-[comment]: <> (Collapse up to here, maybe remove video path/gif)
+**In addition to RL**, this agent supports classification, generative modeling, and various modes.  Therefore we refer to it [as a framework](paper), not just an agent. The full array of the library's features and cross-domain compatibilities are supported by this agent.
 
 ⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽
 
-[comment]: <> (——❖——)
-
-[comment]: <> (✞———————❖———————✞)
-
-As of now, all agents are *visual*, that is, they observe pixel-based inputs.
-
-Save videos with ```log_video=true```.
+Save videos with ```vlog=true```.
 
 :clapper: :movie_camera: -> ```Benchmarking/<experiment>/<agent>/<suite>/<task>_<seed>_Video_Image/```
 
@@ -377,84 +215,20 @@ Save videos with ```log_video=true```.
 <img src="https://qiita-image-store.s3.amazonaws.com/0/3180/8c235a00-cd55-41a2-a605-a4a2e9b0240f.gif" data-canonical-src="https://qiita-image-store.s3.amazonaws.com/0/3180/8c235a00-cd55-41a2-a605-a4a2e9b0240f.gif" width="64" height="84" />
 </p>
 
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽)
-
-[comment]: <> (Maybe collapse all this up above, putting discretization note first)
-
 Check out [args.yaml](Hyperparams/args.yaml) for the full array of configurable options available, including
 * N-step rewards (```nstep=```)
 * Frame stack (```frame_stack=```)
 * Action repeat (```action_repeat=```)
-* & more, with [per-task](Hyperparams/task) defaults in ```/Hyperparams/task``` — please [share your hyperparams](https://github.com/agi-init/UnifiedML/discussions) if you discover new or better ones!
+* & more, with [per-task](Hyperparams/task) defaults in ```/Hyperparams/task``` — please [share your hyperparams](https://github.com/agi-init/UnifiedML/discussions/3) if you discover new or better ones!
 
-[comment]: <> (#)
 
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽)
-
-[comment]: <> (✞———————❖———————✞)
-
-[comment]: <> (—————)
-
-[comment]: <> (Basic RL features are configurable:)
-
-[comment]: <> (- N-step reward via ```nstep=```)
-
-[comment]: <> (- Action repeat via ```action_repeat=```)
-
-[comment]: <> (- Frame stack via ```frame_stack=```)
-
-[comment]: <> (- Exploration schedule via ```'stddev_schedule= '```)
-
-[comment]: <> (Or keep the loosely-optimized per-task defaults already specified in ```Hyperparams/task/```.)
-  
-[comment]: <> (Actor-Critic ensembling is also supported for some agents like ```AC2Agent```:)
-
-[comment]: <> (- ```Agent=Agents.AC2Agent +agent.num_actors=```)
-
-[comment]: <> (- ```Agent=Agents.AC2Agent +agent.num_critics=```)
-
-[comment]: <> (✞———————❖———————✞)
-
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽)
-
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽)
-
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺)
-
-[comment]: <> (<br>)
-
-[comment]: <> (——❖——)
-
-[comment]: <> (#)
-
-&#9432; ***Experimental***: If you'd like to **discretize** a continuous domain, pass in ```discrete=true``` and specify the number of discrete bins per action dimension via ```num_actions=```. If you'd like to **continuous-ize** a discrete domain, pass in ```discrete=false```.
-
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽)
-
-[comment]: <> (#)
-
-[comment]: <> (<br>)
-
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽)
-
-[comment]: <> (Maybe remove all this)
+&#9432; If you'd like to **discretize** a continuous domain, pass in ```discrete=true``` and specify the number of discrete bins per action dimension via ```num_actions=```. If you'd like to **continuous-ize** a discrete domain, pass in ```discrete=false```. *Action space conversions are experimental*.
 
 #
-
-[comment]: <> (——❖——)
 
 > :bulb: *The below sections describe many features in other domains, but chances are those features will work in RL as well. For example, a cosine annealing learning rate schedule can be toggled with: ```lr_decay_epochs=100```. It will anneal per-episode rather than per-epoch. Different model architectures, image transforms, EMAs, and more are all supported across domains!*
 > 
 > The vast majority of this hasn't been tested outside of its respective domain (CV, RL, etc.), so the research opportunity is a lot!
-
-[comment]: <> (#)
-[comment]: <> (⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽⎽⎼⎻⎺⎺⎻⎼⎽)
-
-[comment]: <> (Enjoy :thumbsup:)
-
-[comment]: <> (More in-depth logs can be toggled with ```agent.log=true```.)
-
-[comment]: <> (Options like ```nstep=```, ```action_repeat=```, ```frame_stack=``` let you customize the training further, as well as plenty of [other hyperparams]&#40;Hyperparams/args.yaml&#41;.)
 
 </details>
 
@@ -462,7 +236,7 @@ Check out [args.yaml](Hyperparams/args.yaml) for the full array of configurable 
 
 <details>
 <summary>
-:mag: <i>Click to ascertain</i>
+:mag: <i>Click to categorize</i>
 </summary>
 <br>
 
@@ -471,7 +245,6 @@ CNN on MNIST:
 ```console
 python Run.py task=classify/mnist 
 ```
-[comment]: <> (Since this is *Unified*ML, there are a few noteworthy variations.)
 
 *Note:* ```RL=false``` is the default for ```classify``` tasks. Keeps training at **standard** supervised-only classification.
 
@@ -485,19 +258,7 @@ Since this is *Unified*ML, there are a couple noteworthy variations. You can ign
 
 Classify environments can actually be great testbeds for certain RL problems since they give near-instant and clear performance feedback.
 
-[comment]: <> (*Note:* ```RL=false``` sets training to standard supervised-only classification. Without ```RL=false```, an additional RL update joins the supervised learning update s.t. $reward = -error$.)
-
-[comment]: <> (Alternatively, and interestingly, ```supervise=false``` will *only* supervise via RL $reward = -error$ &#40;**experimental**&#41;. This is pure-RL training and actually works.)
-
-[comment]: <> (with a simple CNN and some small random crop transforms.)
-
-[comment]: <> (*Note:* ```RL=false``` sets training to standard supervised-only classification.)
-
-[comment]: <> (Without ```RL=false```, an **Augmented RL** update joins the supervised learning update s.t. $reward = -error$.)
-
-[comment]: <> (**Pure-RL** Alternatively, and interestingly, ```supervise=false``` will *only* supervise via RL $reward = -error$ &#40;*experimental*&#41;. This is pure-RL training and actually works.)
-
-[comment]: <> (The latent optimization could also be done over a learned parameter space as in POPLIN &#40;Wang and Ba, 2019&#41;, which lifts the domain of the optimization problem eq. &#40;1&#41; from Y to the parameter space of a fully-amortized neural network. This leverages the insight that the parameter space of over-parameterized neural networks can induce easier non-convex optimization problems than in the original space, which is also studied in Hoyer et al. &#40;2019&#41;.)
+*Ignore these variations for doing standard classification.*
 
 **Important features** 
 
@@ -509,29 +270,25 @@ Many popular features are unified in this library and generalized across RL/CV/g
   
 * Different optimizations [can be configured](#custom-optimization) too.
   
-* As well as [Custom Datasets](#custom-datasets). 
+* As well as [Custom Datasets](#custom-dataset). 
 
-* Ensembling is supported for some agents (e.g., ```Agent=Agents.AC2Agent +agent.num_actors=```)
+* Ensembling is supported (e.g., ```+agent.num_actors=```)
   
 * Training with [weight decay](https://arxiv.org/abs/1711.05101) can be toggled via ```weight_decay=```. 
   
 * A [cosine annealing learning rate schedule](https://arxiv.org/abs/1608.03983) can be applied for $N$ epochs (or episodes in RL) with ```lr_decay_epochs=```. 
-  
+
 * And [TorchVision transforms](https://pytorch.org/vision/stable/transforms.html) can be passed in as dicts via ```transform=```. 
   
 For example,
 
 ```console
-python Run.py task=classify/cifar10 ema=true weight_decay=0.01 transform="{RandomHorizontalFlip:{p:0.5}}" Eyes=Blocks.Architectures.ResNet18
+python Run.py task=classify/cifar10 weight_decay=0.01 transform="{RandomHorizontalFlip:{p:0.5}}" Eyes=Blocks.Architectures.ResNet18
 ```
 
-The above returns a $93$% on CIFAR-10 with a ResNet18, which is pretty good. Changing datasets/architectures is as easy as modifying the corresponding parts ```task=``` and ```Eyes=``` of the above script.
+The above returns a $94$% on CIFAR-10 with a ResNet18, which is pretty good. Changing datasets/architectures is as easy as modifying the corresponding parts ```task=``` and ```Eyes=``` of the above script.
 
-And if you set ```supervise=false RL=true```, we get a $94$%... vis-à-vis pure-RL. 
-
-[comment]: <> (Rollouts fill up data in an online fashion, piecemeal, until depletion &#40;all data is processed&#41; and gather metadata like past predictions, which may be useful for curriculum learning.)
-
-[comment]: <> (Automatically toggles ```offline=true``` by default, but can be set to ```false``` if past predictions or "streaming" data is needed.)
+And if you set ```supervise=false RL=true```, we get about the same score... vis-à-vis pure-RL. 
 
 This library is meant to be useful for academic research, and out of the box supports [many datasets](Hyperparams/task/classify), including 
 * Tiny-ImageNet (```task=classify/tinyimagenet```), 
@@ -541,59 +298,11 @@ This library is meant to be useful for academic research, and out of the box sup
 
 </details>
 
-### Offline RL
-
-<details>
-<summary>
-:mag: <i>Click to recall</i>
-</summary>
-<br>
-
-From a saved experience replay, sans additional rollouts:
-
-```console
-python Run.py task=atari/breakout offline=true
-```
-
-Assumes a replay [is saved](#saving).
-
-Implicitly treats ```replay.load=true``` and ```replay.save=true```, and only does evaluation rollouts.
-
-Is true by default for classification, where replays are automatically downloaded.
-
-</details>
-
-[comment]: <> (### Imitation Learning)
-
-[comment]: <> (<details>)
-
-[comment]: <> (<summary>)
-
-[comment]: <> (:mag: <i>Click to recall</i>)
-
-[comment]: <> (</summary>)
-
-[comment]: <> (<br>)
-
-[comment]: <> (The conversion to imitation is really simple. The action gets set as the label and is either argmaxed or one-hotted depending on whether the environment is discrete or continuous, or whether classifying &#40;overriding with ```classify=true```&#41; or doing regression &#40;```classify=false```&#41;.)
-
-[comment]: <> (```console)
-
-[comment]: <> (python Run.py task=atari/breakout imitate=true)
-
-[comment]: <> (```)
-
-[comment]: <> (Assumes a replay [is saved]&#40;#saving&#41; to load and imitate based on.)
-
-[comment]: <> (Implicitly treats ```replay.load=true``` and ```replay.save=true```. The load path can of course be configured &#40;```replay.path```&#41;.)
-
-[comment]: <> (</details>)
-
 ### Generative Modeling
 
 <details>
 <summary>
-:mag: <i>Click to synthesize</i>
+:mag: <i>Click to synth</i>
 </summary>
 <br>
 
@@ -615,12 +324,12 @@ Defaults can be easily modified with custom architectures or even datasets as el
 python Run.py task=classify/mnist generate=true Discriminator=CNN +agent.num_critics=1
 ```
 
-```+agent.num_critics=1``` uses only a single Discriminator rather than ensembling as is done in RL. See [paper]() or [How Is This Possible?](#interrobang-how-is-this-possible) for more details on the unification between Critic and Discriminator. Not all Agents support custom critic ensembling, and those will default to 2.
+```+agent.num_critics=1``` uses only a single Discriminator rather than ensembling as is done in RL. See [How Is This Possible?](#interrobang-how-is-this-possible) for more details on the unification. 
 
 Or a ResNet18:
 
 ```console
-python Run.py task=classify/mnist generate=true Discriminator=Resnet18
+python Run.py task=classify/mnist generate=true Discriminator=ResNet18
 ```
 
 Let's speed up training by turning off the default image augmentation, which is overkill anyway for this simple case:
@@ -633,7 +342,6 @@ python Run.py task=classify/mnist generate=true Aug=Identity +agent.num_critics=
 
 Generative mode implicitly treats training as [offline](#offline-rl), and assumes a replay [is saved](#saving) that can be loaded. As long as a dataset is available or a replay has [been saved](#saving), ```generate=true``` will work for any defined visual task, making it a powerful hyper-parameter that can just work. For now, only visual (image) tasks are compatible. 
 
-[comment]: <> (TODO: set defualts for generate in Run.py/Environment.py automatically)
 Can even work with RL tasks (due to frame stack, the generated images are technically multi-frame videos).
 
 ```console
@@ -644,38 +352,93 @@ Make sure you have [saved a replay](#saving) that can be loaded before doing thi
 
 </details>
 
-[comment]: <> (ensemble could help this:)
-
-[comment]: <> (Extensions. Analyzing and extending the amortization components has been a key development in AVI methods. Cremer et al. &#40;2018&#41; investigate suboptimality in these models are categorize it as coming from an amortization gap where the amortized model for eq. &#40;30&#41; does not properly solve it, or the approximation gap where the variational posterior is incapable of approximating the true distribution. Semi-amortization plays a crucial role in addressing the amortization gap and is explored in the semi-amortized VAE &#40;SAVAE&#41; by)
-
-[comment]: <> (Kim et al. &#40;2018&#41; and iterative VAE &#40;IVAE&#41; by Marino et al. &#40;2018&#41;.)
-
 ### Saving
 <details>
 <summary>
-:mag: <i>Click to load</i>
+:mag: <i>Click to remember</i>
 </summary>
 <br>
 
-**Agents** can be saved periodically or loaded with the ```save_per_steps=``` or ```load=true``` flags, and are automatically saved at end of training with ```save=true``` by default.
+**Agents** are automatically saved at the end of training:
 
 ```console
-python Run.py save_per_steps=100000 load=true
+python Run.py train_steps=2
 ```
 
-An **experience replay** can be saved or loaded with the ```replay.save=true``` or ```replay.load=true``` flags.
+**Agents** can be saved periodically and/or loaded with the ```save_per_steps=``` or ```load=true``` flags respectively:
 
 ```console
-python Run.py replay.save=true replay.load=true
+# Saves periodically
+python Run.py save_per_steps=100000
+
+# Load
+python Run.py load=true
 ```
 
-Agents and replays save to ```./Checkpoints``` and ```./Datasets/ReplayBuffer``` respectively per *a unique experiment*, otherwise overriding.
+**Agents** may be trained without saving by adding the ```save=false``` flag.
 
-*A unique experiment* is distinguished by the flags: ```experiment=```, ```Agent=```, ```task=```, and ```seed=```.
+An **experience replay** can be saved and/or loaded with the ```replay.save=true``` or ```replay.load=true``` flags.
 
-Replays also save uniquely w.r.t. a date-time. In case of multiple saved replays per a unique experiment, the most recent is loaded.
+```console
+# Save
+python Run.py replay.save=true
 
-Careful, without ```replay.save=true``` a replay, whether new or loaded, will be deleted upon terminate, except for the default offline classification replays.
+# Load
+python Run.py replay.load=true
+```
+
+Online tasks, such as online RL, will create a new replay if ```replay.load=false```, or — careful — potentially delete the current replay at the end of training if ```replay.save=false```.
+
+By default, classify tasks are offline, meaning you don't have to worry about loading or saving replays. Since the dataset is static, creating/loading is handled automatically.
+
+<details>
+<summary>
+Click here to learn more about replays
+</summary>
+<br>
+
+<img width="25%" alt="flowchart" src="https://i.imgur.com/9qYLS0n.png"><br><br>
+
+**In UnifiedML, replays are an efficient accelerated storage format for data that support both static and dynamic (changing/growing) datasets.**
+
+You can disable the use of replays with ```stream=true```, which just sends data to the Agent directly from the environment. In RL, this is equivalent to on-policy training. In classification, it means you'll just directly use the Pytorch Dataset, without all the fancy replay features and accelerations.
+
+Replays are recommended for RL because on-policy algorithmic support is currently limited.
+
+~
+
+</details>
+
+Agents and replays save to ```./Checkpoints``` and ```./Datasets/ReplayBuffer``` respectively per *a unique experiment*, otherwise overwriting.
+
+*A unique experiment* is distinguished by the flags: ```experiment=```, ```Agent=```, ```suite=```, ```task_name=```, and ```seed=```.
+
+You can change the Agent load/save path with ```load_path=```/```save_path=```, and ```replay.path=``` for replays. All three accept string paths e.g. ```load_path='./Checkpoints/Exp/AC2Agent/classify/MNIST_1.pt'```.
+
+
+</details>
+
+### Offline RL
+
+<details>
+<summary>
+:mag: <i>Click to play retroactively</i>
+</summary>
+<br>
+
+Offline means the dataset size doesn't grow.
+
+From a saved experience replay, sans additional rollouts:
+
+```console
+python Run.py task=atari/breakout offline=true
+```
+
+Assumes a replay [is saved](#saving).
+
+Implicitly treats ```replay.load=true``` and ```replay.save=true```, and only does learning updates and evaluation rollouts.
+
+```offline=true``` is the default for classification, where datasets are automatically downloaded and created into offline replays.
 
 </details>
 
@@ -683,7 +446,7 @@ Careful, without ```replay.save=true``` a replay, whether new or loaded, will be
 
 <details>
 <summary>
-:mag: <i>Click to disperse</i>
+:mag: <i>Click to de-centralize</i>
 </summary>
 <br>
 
@@ -735,9 +498,248 @@ Then, in a separate process, after that replay has been created:
 python Run.py replay.load=true replay.save=true 
 ```
 
-[comment]: <> (It's a bit finicky; there are a few timing delicacies that I don't account for. I recommend to wait until at least 1 episode for the first script's replay to be created before launching the second script. This is not meant as a deployable means of distributed training. It just happens to work, incidentally, sort of.)
+</details>
 
 </details>
+
+### Custom Architectures
+
+<details>
+<summary>
+:mag: <i>Click to construct</i>
+</summary>
+<br>
+
+A rich and expressive command line syntax is available for selecting and customizing architectures such as those defined in [```./Blocks/Architectures```](Blocks/Architectures).
+
+ResNet18 on CIFAR-10:
+
+```console
+python Run.py task=classify/cifar10 Eyes=ResNet18 
+```
+
+Atari with ViT:
+
+```console
+python Run.py Eyes=ViT +eyes.patch_size=7
+```
+
+Shorthands like ```Aug```, ```Eyes```, and ```Pool``` make it easy to plug and play custom architectures. All of an agent's architectural parts can be accessed, mixed, and matched with their [corresponding recipe shorthand](Hyperparams/args.yaml#L182-L233) names.
+
+Generally, the rule of thumb is Capital names for paths to classes (such as ```Eyes=Blocks.Architectures.MLP```) and lowercase names for shortcuts to tinker with model args (such as ```+eyes.depth=1```).
+
+Architectures imported in [Blocks/Architectures/\_\_init\_\_.py](Blocks/Architectures/__init__.py) can be accessed directly without need for entering their full paths, as in ```Eyes=ViT``` works just as well as ```Eyes=Blocks.Architectures.ViT```.
+
+
+<details>
+<summary><i>See more examples :open_book: </i></summary>
+<br>
+
+CIFAR-10 with ViT:
+
+```console
+python Run.py Eyes=ViT task=classify/cifar10 ema=true weight_decay=0.01 +eyes.depth=6 +eyes.out_channels=512 +eyes.mlp_hidden_dim=512 transform="{RandomCrop:{size:32,padding:4},RandomHorizontalFlip:{}}" Aug=Identity
+```
+
+Here is a more complex example, disabling the Encoder's flattening of the feature map, and instead giving the Actor and Critic unique Attention Pooling operations on their trunks to pool the unflattened features. The ```Identity``` architecture disables that flattening component.
+
+```console
+python Run.py task=classify/mnist Q_trunk=Transformer Pi_trunk=Transformer Pool=Identity
+```
+
+Here is a nice example of the critic using a small CNN for downsampling features:
+
+```console
+python Run.py task=dmc/cheetah_run Q_trunk=CNN +q_trunk.depth=1 pool=Identity
+```
+
+A CNN Actor and Critic:
+```console
+python Run.py Q_trunk=CNN Pi_trunk=CNN +q_trunk.depth=1 +pi_trunk.depth=1 Pool=Identity
+```
+
+*A little secret*, but pytorch code can be passed directly too via quotes:
+
+```console
+python Run.py "eyes='CNN(kwargs.input_shape,32,depth=3)'"
+```
+```console
+python Run.py "eyes='torch.nn.Conv2d(kwargs.input_shape[0],32,kernel_size=3)'"
+```
+
+Some blocks have default args which can be accessed with the ```kwargs.``` interpolation shown above.
+
+An intricate example of the expressiveness of this syntax:
+```console
+python Run.py Optim=SGD 'Pi_trunk="nn.Sequential(MLP(input_shape=kwargs.input_shape, output_shape=kwargs.output_shape),nn.ReLU(inplace=True))"' lr=0.01
+```
+
+Both the uppercase and lowercase syntax support direct function calls in place of usual syntax, with function calls distinguished by the syntactical quotes and parentheticals.
+
+The parser automatically registers the imports/class paths in ```Utils.``` in both the uppercase and lowercase syntax, including modules/classes ```torch```, ```torch.nn```, and architectures/paths in ```./Blocks/Architectures/``` like ```CNN``` for direct access and no need to type ```Utils.```.
+
+</details>
+
+To ***make*** a custom architecture, you can use any Pytorch module which outputs a tensor. Woohoo, done.
+
+To make it mix-and-matchable throughout UnfiedML for arbitrary dimensionalities and domains, to generalize as much as possible, you can add:
+1. ```input_shape``` and ```output_shape``` arguments to the \_\_init\_\_ method, such that your architecture can have a defined adaptation scheme for different possible shapes.
+2. Support arbitrary many inputs (such as by concatenating them) of weird shapes (broadcasting them).
+3. A ```repr_shape(*_)``` method that pre-computes the output shape given a varying-number of input shape dimensions as arguments.
+
+None of these add-ons are *necessary*, but if you include all of them, then your architecture can adapt to everything. There are lazy ways to hack all of these features into any architecture, or you can follow the pretty basic templates used in our existing array of architectures. Most of our architectures can probably be used to build whatever architecture you’re trying to build, honestly, or at least something similar enough that you could have a good jumping-off point.
+
+In short: To make your own architecture mix-and-matchable, just put it in a pytorch module with initialization options for ```input_shape``` and ```output_shape```, as in the architectures in [```./Blocks/Architectures```](Blocks/Architectures).
+
+The Encoder Eyes automatically adapt 2d conv to 1d conv by the way (if data is 1d).
+
+</details>
+
+### Custom Optimizers
+
+<details>
+<summary>
+:mag: <i>Click to search/explore</i>
+</summary>
+<br>
+
+You can pass in a path to the ```Optim=``` flag or select a built-in Pytorch optimizer like ```SGD```, or both as below:
+
+```console
+python Run.py Optim=Utils.torch.optim.SGD lr=0.1
+```
+
+Equivalently via the expressive recipe interface:
+
+```console
+python Run.py Optim=SGD lr=0.1
+```
+
+or
+
+```console
+python Run.py "optim='torch.optim.SGD(kwargs.params, lr=0.1)'"
+```
+
+In the first two examples, the ```lr=``` flag was optional. The default learning rate is ```1e-4``` and we could have writen ```+optim.lr=```.
+
+**Per-block optimizers** For example, just the Encoder:
+
+```console
+python Run.py encoder.Optim=SGD
+```
+
+**Learning rate schedulers.** ```Scheduler=``` works analogously to ```Optim=```, or just use the ```lr_decay_epochs=``` shorthand for cosine annealing *e.g.*
+
+```console
+python Run.py task=classify/mnist lr_decay_epochs=100
+```
+
+</details>
+
+### Custom Env
+
+<details>
+<summary>
+:mag: <i>Click to let there be light</i>
+</summary>
+<br>
+
+As an example of custom environments, we provide the [Super Mario Bros.](https://github.com/Kautenja/gym-super-mario-bros) game environment in [./Datasets/Suites/SuperMario.py](Datasets/Suites/SuperMario.py).
+
+To use it, you can just pass in the path to ```Env=``` and specify the ```suite``` and the ```task_name``` to your choosing:
+
+```console
+python Run.py Env=Datasets.Suites.SuperMario.SuperMario suite=SuperMario task_name=Mario
+```
+
+<p align="left">
+<a href="https://imgur.com/12cLAs4"><img src="https://i.imgur.com/12cLAs4.gif" width="180" title="source: imgur.com" /></a>
+<br><i>Mario trained via DQN.</i>
+</p>
+
+Any Hyperparams you don't specify will be inherited from the default task, ```atari/pong``` in [```./Hyperparams/task/atari/pong.yaml```](Hyperparams/task/atari/pong.yaml), or whichever task is selected.
+
+&#9432; If you want to save Hyperparams and formally define a task, you can create files like [```./Hyperparams/task/mario.yaml```](Hyperparams/task/mario.yaml) in the [./Hyperparams/task/](Hyperparams/task) directory:
+
+```ruby
+# ./Hyperparams/task/mario.yaml
+defaults:
+  - _self_
+
+Env: Datasets.Suites.SuperMario.SuperMario
+suite: SuperMario
+task_name: Mario
+discrete: true
+action_repeat: 4
+truncate_episode_steps: 250
+nstep: 3
+frame_stack: 4
+train_steps: 3000000
+stddev_schedule: 'linear(1.0,0.1,800000)'
+```
+
+Now you can launch Mario with:
+
+```console
+python Run.py task=mario
+```
+
+You can also customize params and worlds and stages with the ```+env.``` syntax:
+
+```console
+python Run.py task=mario +env.stage=2
+```
+
+</details>
+
+### Custom Dataset
+
+<details>
+<summary>
+:mag: <i>Click to read, parse, & boot up</i>
+</summary>
+<br>
+
+You can pass in any Dataset as follows:
+
+```console
+python Run.py task=classify/custom Dataset=torchvision.datasets.MNIST
+```
+
+That will launch MNIST. Another example, with a custom class and path,
+
+```console
+python Run.py task=classify/custom Dataset=Datasets.Suites._TinyImageNet.TinyImageNet
+```
+
+This will initiate a classify task on the custom-defined [```TinyImageNet```](Datasets/Suites/_TinyImageNet.py#L48) Dataset.
+
+You can change the task name as it's saved for benchmarking and plotting, with ```task_name=```. The default is the class name such as ```TinyImageNet```.
+
+**UnifiedML is compatible with datasets & domains besides Vision.**
+
+Thanks to dimensionality adaptivity ([paper 3.6](paper)) for example, train the default CNN architecture on raw 1D Audio:
+
+```console
+python Run.py task=classify/custom Dataset=Datasets.Suites._SpeechCommands.SpeechCommands Aug=Identity
+```
+
+Gets a perfect score on speech command classification from raw 1D audio with the default CNN setting.  
+
+<details>
+<summary>
+<i>More details and examples :open_book:</i>
+</summary>
+<br>
+
+For a non-Vision/Audio tutorial, we provide a full [end-to-end example](https://www.github.com/agi-init/XRD) in Crystal classification, reproducing [classifying crystal structures and space groups from X-ray diffraction patterns]().
+
+</details>
+
+---
+
+Note: You can also specify an **independent test dataset** explicitly with ```TestDataset=```. 
 
 </details>
 
@@ -748,6 +750,20 @@ python Run.py replay.load=true replay.save=true
 :mag: <i>Learn to cook</i>
 </summary>
 <br>
+
+**Save hyperparams** to ```.yaml``` files by defining them in the [./Hyperparams/task/](Hyperparams/task) directory. There are many saved examples already.
+
+If you've defined a ```.yaml``` file called ```my_recipe.yaml``` for example, you can use it via 
+
+```console
+python Run.py task=my_recipe
+```
+
+Please [share your recipes](https://github.com/agi-init/UnifiedML/discussions/3) in our Discussions page if you discover new or better hyperparams for a problem.
+
+**Recipes can also be defined temporarily via command line without saving them to .yaml files.**
+
+Below is a running list of some out-of-the-ordinary or interesting ones:
 
 ```console
 python Run.py Eyes=Sequential +eyes._targets_="[CNN, Transformer]" task=classify/mnist
@@ -790,195 +806,11 @@ python Run.py task=dmc/cheetah_run Predictor=load +predictor.path=./Checkpoints/
 python Run.py task=classify/mnist Eyes=Identity Predictor=Perceiver +predictor.depths=10
 ```
 
-[comment]: <> (Doesn't work:)
-
-[comment]: <> (```console)
-
-[comment]: <> (python Run.py experiment='Q-Learning-Target_expected+entropy_Intensity+Shift' Aug=Sequential '+aug._targets_="[IntensityAug&#40;0.05&#41;, RandomShiftsAug&#40;4&#41;]"')
-
-[comment]: <> (```)
-
-[comment]: <> (python Run.py                     task=classify/custom                     Dataset=XRD.XRD                     Aug=Identity                     Trunk=Identity                     Eyes=ViT                    batch_size=2                  Optim=SGD                     lr=1e-3                     standardize=false                     norm=false                     task_name='Soup-50-50_${dataset.num_classes}-Way'                     experiment='CNN_optim_SGD_batch_size_${batch_size}_lr_1e-3'                     '+dataset.roots=["../XRDs/icsd_Datasets/icsd171k_mix/","../XRDs/icsd_Datasets/rruff/XY_DIF_noiseAll/"]'                     +'dataset.train_eval_splits=[1, 0.5]'                     +dataset.num_classes=7                     train_steps=5e5 num_workers=1  +eyes.depth=1)
-
-
 ```console
 python Run.py Aug=Sequential +aug._targets_="[IntensityAug, RandomShiftsAug]" +aug.scale=0.05 aug.pad=4
 ```
 
-</details>
-
-### Custom Architectures
-
-<details>
-<summary>
-:mag: <i>Click to construct</i>
-</summary>
-<br>
-
-A rich and expressive command line syntax is available for selecting and customizing architectures such as those defined in [```./Blocks/Architectures```](Blocks/Architectures).
-
-ResNet18 on CIFAR-10:
-
-```console
-python Run.py task=classify/cifar10 Eyes=ResNet18 
-```
-
-[comment]: <> (TODO: MiniViT, ViT)
-Atari with ViT:
-
-```console
-python Run.py Eyes=ViT +eyes.patch_size=7
-```
-
-[comment]: <> (TODO: Eyes, Ears, etc. recipes -> hands)
-Shorthands like ```Aug```, ```Eyes```, and ```Pool``` make it easy to plug and play custom architectures. All of an agent's architectural parts can be accessed, mixed, and matched with their [corresponding recipe shorthands](Hyperparams/args.yaml#L166).
-
-Generally, the rule of thumb is capital names for paths to classes (such as ```Eyes=Blocks.Architectures.MLP```) and lowercase names for shortcuts to tinker with model args (such as ```+eyes.depth=1```).
-
-Architectures imported in [Blocks/Architectures/\_\_init\_\_.py](Blocks/Architectures/__init__.py) can be accessed directly without need for entering their full paths, as in ```Eyes=ViT``` works just as well as ```Eyes=Blocks.Architectures.ViT```.
-
-
-<details>
-<summary><i>See more examples :open_book: </i></summary>
-<br>
-
-CIFAR-10 with ViT:
-
-```console
-python Run.py Eyes=ViT task=classify/cifar10 ema=true weight_decay=0.01 +eyes.depth=6 +eyes.out_channels=512 +eyes.mlp_hidden_dim=512 transform="{RandomCrop:{size:32,padding:4},RandomHorizontalFlip:{}}" Aug=Identity
-```
-
-Here is a more complex example, disabling the Encoder's flattening of the feature map, and instead giving the Actor and Critic unique Attention Pooling operations on their trunks to pool the unflattened features. The ```Identity``` architecture disables that flattening component.
-
-```console
-python Run.py task=classify/mnist Q_trunk=Transformer Pi_trunk=Transformer Pool=Identity
-```
-
-Here is a nice example of the critic using a small CNN for downsampling features:
-
-```console
-python Run.py task=dmc/cheetah_run Q_trunk=CNN +q_trunk.depth=1 pool=Identity
-```
-
-A CNN Actor and Critic:
-```console
-python Run.py Q_trunk=CNN Pi_trunk=CNN +q_trunk.depth=1 +pi_trunk.depth=1 Pool=Identity
-```
-
-[comment]: <> (<details>)
-
-[comment]: <> (<summary><i>See even more examples :open_book: </i></summary>)
-
-[comment]: <> (<br>)
-
-[comment]: <> (Here's how you can load another saved agent's encoder from a pre-configured agent checkpoint ```<path>```:)
-
-[comment]: <> (```)
-
-[comment]: <> (python Run.py Eyes=Utils.load +eyes.path=<path> +eyes.attr=encoder.Eyes)
-
-[comment]: <> (```)
-
-[comment]: <> (You can imagine training a GAN CNN and then seamlessly using it for RL.)
-
-[comment]: <> (<br>)
-
-[comment]: <> (</details>)
-
-*A little secret*, but pytorch code can be passed directly too via quotes:
-
-```console
-python Run.py "eyes='CNN(kwargs.input_shape,32,depth=3)'"
-```
-```console
-python Run.py "eyes='torch.nn.Conv2d(kwargs.input_shape[0],32,kernel_size=3)'"
-```
-
-Some blocks have default args which can be accessed with the ```kwargs.``` interpolation shown above.
-
-An intricate example of the expressiveness of this syntax:
-```console
-python Run.py Optim=SGD 'Pi_trunk="nn.Sequential(MLP(input_shape=kwargs.input_shape, output_dim=kwargs.output_dim),nn.ReLU(inplace=True))"' lr=0.01
-```
-
-Both the uppercase and lowercase syntax support direct function calls in place of usual syntax, with function calls distinguished by the syntactical quotes and parentheticals.
-
-The parser automatically registers the imports/class paths in ```Utils.``` in both the uppercase and lowercase syntax, including modules/classes ```torch```, ```torch.nn```, and architectures/paths in ```./Blocks/Architectures/``` like ```CNN``` for direct access and no need to type ```Utils.```.
-
-</details>
-
-Of course, it's always possible to just modify the library code itself, which may be easier depending on your use case. The code is designed to be clear for educational and innovational purposes alike.
-
-To make your own architecture mix-and-matchable, just put it in a pytorch module with initialization options for ```input_shape``` and ```output_dim```, as in the architectures in [```./Blocks/Architectures```](Blocks/Architectures).
-
-</details>
-
-### Custom Optimizers
-
-<details>
-<summary>
-:mag: <i>Click to search/explore</i>
-</summary>
-<br>
-
-Optimization parts can be accessed *e.g.* 
-
-```console
-python Run.py Optim=Utils.torch.optim.SGD lr=0.1
-```
-
-or via the expressive recipe interface described in [Custom Architectures](#custom-architectures):
-
-```console
-python Run.py Optim=SGD lr=0.1
-```
-or
-```console
-python Run.py "optim='torch.optim.SGD(kwargs.params, lr=0.1)'"
-```
-
-Learning rate schedulers can also be customized as well with ```scheduler=``` analogously, or via the ```lr_decay_epochs=``` shorthand for cosine annealing.
-
-
-</details>
-
-### Custom Dataset
-
-<details>
-<summary>
-:mag: <i>Click to read/parse</i>
-</summary>
-<br>
-
-You can pass in a Pytorch Dataset class as follows:
-
-```console
-python Run.py task=classify/custom Dataset=torchvision.datasets.MNIST
-```
-
-Another example:
-
-```console
-python Run.py task=classify/custom Dataset=Datasets.Suites._TinyImageNet.TinyImageNet
-```
-
-This will initiate a classify task on the custom-defined [```TinyImageNet```](Datasets/Suites/_TinyImageNet.py#L48) Dataset located in [./Datasets/Suites/_TinyImageNet.py](Datasets/Suites/_TinyImageNet.py). 
-
-By default, the task name will appear as the Dataset class name (in the above examples, ```MNIST``` and ```TinyImageNet```). You can change the task name as it's saved for benchmarking and plotting, with ```task_name=```.
-
-:exclamation: UnifiedML is compatible with datasets & domains beyond Vision.
-
-<details>
-<summary>
-<i>More details :open_book:</i>
-</summary>
-<br>
-
-For a non-Vision tutorial, see our full [end-to-end example](https://www.github.com/agi-init/XRD) of Crystalographic-Structure-And-Space-Group classification, in which we fully reproduce the [paper on classifying crystal structures and space groups from X-ray diffraction patterns]() in a single succinct file with some UnifiedML commands. The custom Crystal & Space Groups dataset will be downloaded automatically in the example.
-
-> &#9432; Note that this dataset consists of *1-dimensional* data that is read into a 1D CNN and MLPs. UnifiedML architectures like CNN and MLP are **dimensionality-adaptive**! See [paper]() Section 3.6 for details about architecture adaptivity.
-
-</details>
+These are also useful for testing whether I've broken things.
 
 </details>
 
@@ -998,13 +830,13 @@ python Run.py
 
 :chart_with_upwards_trend: :bar_chart: --> ```./Benchmarking/Exp/```
 
-Optionally plot multiple experiments in a unified figure with ```plotting.plot_experiments=```.
+Optionally plot multiple experiments
 
 ```console
 python Run.py experiment=Exp2 plotting.plot_experiments="['Exp', 'Exp2']"
 ```
 
-Alternatively, you can call ```Plot.py``` directly
+Alternatively, you can call [```Plot.py```](Plot.py) directly
 
 ```console
 python Plot.py plot_experiments="['Exp', 'Exp2']"
@@ -1015,7 +847,7 @@ to generate plots. Here, the ```<experiment>``` directory name will be the under
 Plotting also accepts regex expressions. For example, to plot all experiments with ```Exp``` in the name:
 
 ```console
-python Plot.py plot_experiments="['.*Exp.*']"
+python Plot.py plot_experiments="['Exp.*']"
 ```
 
 Another option is to use [WandB](https://wandb.ai/), which is supported by UnifiedML:
@@ -1031,57 +863,113 @@ To do a hyperparameter sweep, just use the ```-m``` flag.
 python Run.py -m task=atari/pong,classify/mnist seed=1,2,3 
 ```
 
+Log video during evaluations with ```log_media=true```.
+
 </details>
 
-[comment]: <> (The above will sweep over random seeds 1, 2, and 3, and whether to use EMA.)
+### Publishing
+
+<details>
+<summary>
+:mag: <i>Click to write your own paper</i>
+</summary>
+<br>
+
+We have released our slide deck!
+
+[Templates available here](https://docs.google.com/presentation/d/1JpT09GMN0xa81J1h88urRklcOZkJ704s58LHHikmUG8/edit?usp=sharing)
+
+Feel free to use our UnifiedML templates and figures in your work, citing [us](#pen-paper--citing) of course.
+
+**Open-source research for minimal redundancy and optimal standardization is the way to go, balancing privacy and de-centrality, and streamlining successive works that depend on ours in good faith. Post your own designs and assets [here](https://github.com/agi-init/UnifiedML/discussions/2) in the discussion board. Read the rules to keep citations and credit attribution fair.**
+
+</details>
 
 # :bar_chart: Agents & Performances
 
-In progress...
+<details>
+<summary>
+Atari
+</summary>
+<br>
 
-[comment]: <> (# :interrobang: How is this possible)
+We can attain 100% mean human-normalized score across the Atari-26 benchmark suite in about 1m environment steps. 
 
-[comment]: <> (We use our new Creator framework to unify RL discrete and continuous action spaces, as elaborated in our [paper]&#40;https://arxiv.com&#41;.)
+The below example script shows how to launch training for just Pong and Breakout with ```AC2Agent```:
 
-[comment]: <> (Then we frame actions as "predictions" in supervised learning. We can even augment supervised learning with an RL phase, treating reward as negative error.)
+```console
+python Run.py task=atari/pong,atari/breakout -m
+```
 
-[comment]: <> (For generative modeling, well, it turns out that the difference between a Generator-Discriminator and Actor-Critic is rather nominal.)
+The results are reported for all 26 games and 3 different agents:
 
-[comment]: <> ([comment]: <> &#40;![alt text]&#40;https://i.imgur.com/Yf8ltyI.png&#41;&#41;)
+<img width="40%" alt="flowchart" src="https://i.imgur.com/4c70wla.png">
 
-[comment]: <> (<img width="80%" alt="flowchart" src="https://i.imgur.com/nMUR9Ue.png">)
+<details>
+<summary>
+Click here to see per-task results.
+</summary>
+<br>
 
-[comment]: <> (</p>)
+<img width="80%" alt="flowchart" src="https://i.imgur.com/DVIcwtV.jpg">
 
-[comment]: <> (<img width="80%" alt="flowchart" src="https://i.imgur.com/RM52cfJ.png?1">)
+</details>
+
+We found these results to be pretty stable across a range of exploration rates as well:
+
+<img width="60%" alt="flowchart" src="https://i.imgur.com/RUZcg70.png">
+
+Each time point averages over 10 evaluation episodes (and 26 games).
+
+</details>
+
+<details>
+<summary>
+DCGAN
+</summary>
+<br>
+
+The simplest way to do DCGAN is to use the DCGAN architecture:
+
+```console
+python Run.py task=classify/celeba generate=true Discriminator=DCGAN.Discriminator Generator=DCGAN.Generator train_steps=50000
+```
+
+<img width="40%" alt="flowchart" src="https://i.imgur.com/12tsPGN.png">
+
+We can then improve the results, and speed up training tenfold, by modifying the hyperparameters:
+
+```console
+python Run.py task=classify/celeba generate=true Discriminator=DCGAN.Discriminator Generator=DCGAN.Generator z_dim=100 Aug=Identity Optim=Adam '+optim.betas=[0.5, 0.999]' lr=2e-4 +agent.num_critics=1 train_steps=5000
+```
+
+<img width="60%" alt="flowchart" src="https://i.imgur.com/1yMmpIw.png">
+
+</details>
+
+# :interrobang: How is this possible
+
+We use our new Creator framework to unify RL discrete and continuous action spaces, as elaborated in our [paper](https://arxiv.com).
+
+Then we frame actions as "predictions" in supervised learning. We can even augment supervised learning with an RL phase, treating reward as negative error.
+
+For generative modeling, well, it turns out that the difference between a Generator-Discriminator and Actor-Critic is rather nominal.
+
+<img width="80%" alt="flowchart" src="https://i.imgur.com/4Ziarr0.gif">
 
 # :mortar_board: Pedagogy and Research
 
 All files are designed for pedagogical clarity and extendability for research, to be useful for educational and innovational purposes, with simplicity at heart.
 
-[comment]: <> (# :people_holding_hands: Contributing)
+# :people_holding_hands: Contributing
 
-[comment]: <> (Please support financially: <br>)
+Please support financially by Sponsoring. <br>
 
-[comment]: <> ([![Donate]&#40;https://img.shields.io/badge/Donate-PayPal-green.svg?style=flat-square&#41;]&#40;https://www.paypal.com/cgi-bin/&#41; <br>)
+We are a nonprofit, single-PhD student team. If possible, compute resources appreciated.
 
-[comment]: <> (We are a nonprofit, single-PhD student team. If possible, compute resources appreciated.)
+Feel free to [contact **agi.\_\_init\_\_**](mailto:agi.init@gmail.com).
 
-[comment]: <> ([comment]: <> &#40;Our work will go towards helping nature through AI, making academic-level research accessible to all, and simplifying, bridging, and unifying the vast array of problem domains in our field.&#41;)
-
-[comment]: <> (Feel free to [contact **agi.\_\_init\_\_**]&#40;mailto:agi.init@gmail.com&#41;.)
-
-[comment]: <> (I am always looking for collaborators. Don't hesitate to volunteer in any way to help realize the full potential of this library.)
-
-# Note
-
-[comment]: <> (*While UnifiedML V.0 is a fully-realized, self-complete library, we note that it is also a ground for expansion beyond what is presented, with more performative breadth and depth on the way.*)
-
-### If you are only interested in the RL portion,
-
-Check out our [**UnifiedRL**](https:github.com/agi-init/UnifiedRL) library.
-
-It does with RL to this library what PyCharm does with Python to IntelliJ, i.e., waters it down mildly and rebrands a little.~
+I am always looking for collaborators. Don't hesitate to volunteer in any way to help realize the full potential of this library.
 
 <hr class="solid">
 

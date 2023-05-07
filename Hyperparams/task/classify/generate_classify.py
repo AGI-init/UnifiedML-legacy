@@ -20,19 +20,24 @@ if __name__ == '__main__':
     for task, dataset_path in zip(names, paths):
         f = open(f"./{task.lower()}.yaml", "w")
         f.write(fr"""defaults:
-      - _self_
-    
+  - _self_
+
 Env: Datasets.Suites.Classify.Classify
 Dataset: {dataset_path}
 environment:
     dataset: ${{dataset}}
+    test_dataset: ${{test_dataset}}
     low: {'null' if task == 'Custom' else 0}
     high: {'null' if task == 'Custom' else 1}
     batch_size: ${{batch_size}}
     num_workers: ${{num_workers}}
+env:
+    transform: {'transforms.Compose([transforms.Resize(64),transforms.CenterCrop(64)])' if task == 'CelebA' else 'null'}
+logger:
+    log_actions: ${{not:${{generate}}}}
 suite: classify
 task_name: {'${format:${Dataset}}' if task == 'Custom' else task}
-discrete: false
+discrete: true
 train_steps: 200000
 stddev_schedule: 'linear(1.0,0.1,100000)'
 frame_stack: null
@@ -42,8 +47,8 @@ evaluate_per_steps: 1000
 evaluate_episodes: 1
 learn_per_steps: 1
 learn_steps_after: 0
-seed_steps: 50
-explore_steps: 0
+seed_steps: 0
+rand_steps: 0
 log_per_episodes: 300
 RL: false
 online: false  # Same as offline: true

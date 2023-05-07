@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # MIT_LICENSE file in the root directory of this source tree.
 from pathlib import Path
-import imageio  # M1 Mac: comment out freeimage imports in imageio/plugins/_init_
+import imageio  # M1 Mac: Additionally run: conda install imageio imageio-ffmpeg
 
 import torch
 from torchvision.utils import save_image
@@ -18,10 +18,11 @@ class Vlogger:
         # Saves image reels instead of video
         self.reel = reel
 
-    def dump_vlogs(self, vlogs, name="Video_Image"):
+    def dump(self, vlogs, name="Video_Image"):
         if self.reel:
             c, h, w = (min(vlogs[0].shape[-3], 3),  # Undoing frame-stack if necessary (max = 3 channels per image)
                        vlogs[0].shape[-2], vlogs[0].shape[-1])
+            vlogs = list(map(torch.as_tensor, vlogs))
             save_image(torch.stack(vlogs).view(-1, c, h, w), str(self.save_path / (name + '.png')))
         else:
             # Assumes channel-last format

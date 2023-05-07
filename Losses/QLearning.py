@@ -3,59 +3,53 @@
 # This source code is licensed under the MIT license found in the
 # MIT_LICENSE file in the root directory of this source tree.
 import torch
-import torch.nn.functional as F
-
-import Utils
+from torch.nn.functional import mse_loss, binary_cross_entropy
 
 
-def ensembleQLearning(critic, actor, obs, action, reward, discount, next_obs, step, num_actions=1, logs=None):
-    # Non-NaN next_obs
-    has_future = ~torch.isnan(next_obs.flatten(1)[:, :1]).squeeze(1) * bool(next_obs.size(1))
-    next_obs = next_obs[has_future]
+def ensembleQLearning(critic, actor, obs, action, reward, discount=1, next_obs=None, step=0, logs=None):
+    # Non-empty next_obs
+    has_future = next_obs is not None and bool(next_obs.nelement())
 
     # Compute Bellman target
     with torch.no_grad():
         # Current reward
         target_Q = reward
 
-        # Future action and Q-values
-        next_action = All_Next_Qs = None
-
         # Discounted future reward
-        if has_future.any():
+        if has_future:
             # Get actions for next_obs
             next_Pi = actor(next_obs, step)
 
-            # Discrete Critic tabulates all actions for discrete envs a priori, no need to sample subset
-            all_actions_known = hasattr(critic, 'action')
+            # Discrete Critic tabulates all actions for single-dim discrete envs a priori, no need to sample
+            next_action = None if critic.all_actions_known else next_Pi.sample(1)  # Sample
 
-            if not all_actions_known:
-                next_action = next_Pi.sample(num_actions)  # Sample actions
-
-            if actor.discrete:
-                All_Next_Qs = next_Pi.All_Qs  # Discrete Actor policy already knows all Q-values
+            # Discrete Actor already computed Q-values and they're already known by Policy
+            All_Next_Qs = next_Pi.All_Qs if actor.discrete else None
 
             # Q-values per action
-            next_Qs = critic.ema(next_obs, next_action, All_Next_Qs)  # Call a delayed-copy (EMA) of Critic: Q(obs, a)
-            next_q = next_Qs.min(1)[0]  # Min-reduced ensemble
-            next_q_norm = next_q - next_q.max(-1, keepdim=True)[0]  # Normalized
+            next_Qs = critic.ema.eval()(next_obs, next_action, All_Next_Qs)  # Call a delayed-copy Critic: Q(obs, a)
 
-            # Weigh each action's Q-value by its probability
-            temp = Utils.schedule(actor.stddev_schedule, step)  # Softmax temperature / "entropy"
-            next_action_probs = (next_q_norm / temp).softmax(-1)  # Action probabilities
-            next_v = torch.zeros_like(discount)
-            next_v[has_future] = (next_q * next_action_probs).sum(-1, keepdim=True)  # Expected Q-value = E_a[Q(obs, a)]
+            # Pessimistic Q-values per action
+            next_q = next_Qs.min(1)[0]  # Min-reduced critic ensemble
 
-            target_Q += discount * next_v
+            # Weigh each action's pessimistic Q-value by its probability
+            next_action_prob = next_q.size(1) < 2 or next_Pi.log_prob(next_action).softmax(-1)  # Action probability
+            next_v = (next_q * next_action_prob).sum(-1, keepdim=True)  # Expected Q-value = E_a[Q(obs, a)]
+
+            target_Q += discount * next_v  # Add expected future discounted-cumulative-reward to reward
 
     Qs = critic(obs, action)  # Q-ensemble
 
-    # Temporal difference (TD) error (via MSE, but could also use Huber)
-    q_loss = F.mse_loss(Qs, target_Q.unsqueeze(1).expand_as(Qs))
+    # Use BCE if Critic is Sigmoid-activated, else MSE
+    criterion = binary_cross_entropy if critic.binary else mse_loss
+
+    # Temporal difference (TD) error
+    q_loss = criterion(Qs.float(), target_Q.unsqueeze(1).float().expand_as(Qs))
 
     if logs is not None:
         logs['temporal_difference_error'] = q_loss
-        logs.update({f'q{i}': Qs[:, i].median() for i in range(Qs.shape[1])})
+        logs.update({f'q{i}': Qs[:, i].to('cpu' if Qs.device.type == 'mps' else Qs).median()  # median not on MPS
+                     for i in range(Qs.shape[1])})
         logs['target_q'] = target_Q.mean()
 
     return q_loss

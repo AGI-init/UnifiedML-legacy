@@ -14,7 +14,7 @@ import Utils
 
 class CNNEncoder(nn.Module):
     """
-    CNN encoder generalized to work with proprioceptive recipes and multi-dimensionality convolutions (1d or 2d)
+    CNN encoder generalized to work with proprioceptive/spatial inputs and multi-dimensionality convolutions (1d or 2d)
     """
     def __init__(self, obs_spec, context_dim=0, standardize=False, norm=False, Eyes=None, pool=None, parallel=False,
                  optim=None, scheduler=None, lr=None, lr_decay_epochs=None, weight_decay=None, ema_decay=None):
@@ -30,8 +30,7 @@ class CNNEncoder(nn.Module):
         self.normalize = norm and None not in [self.low, self.high]  # Whether to [0, 1] shift-max scale
 
         # Dimensions
-        obs_shape = list(self.obs_shape)
-
+        obs_shape = [*(1,) * (len(self.obs_shape) < 2), *self.obs_shape]  # Create at least 1 channel dim & spatial dim
         obs_shape[0] += context_dim
 
         # CNN
@@ -53,7 +52,7 @@ class CNNEncoder(nn.Module):
                                                           lr, lr_decay_epochs, weight_decay)
         if ema_decay:
             self.ema_decay = ema_decay
-            self.ema = copy.deepcopy(self).eval()
+            self.ema = copy.deepcopy(self).requires_grad_(False).eval()
 
     def forward(self, obs, *context, pool=True):
         # Operate on non-batch dims, then restore
@@ -63,20 +62,21 @@ class CNNEncoder(nn.Module):
         batch_dims = obs.shape[:-dims]  # Preserve leading dims
         axes = (1,) * (dims - 1)  # Spatial axes, useful for dynamic input shapes
 
-        try:
-            obs = obs.reshape(-1, *self.obs_shape)  # Validate shape, collapse batch dims
-        except RuntimeError:
-            raise RuntimeError('\nObs shape does not broadcast to pre-defined obs shape '
-                               f'{tuple(obs.shape)}, ≠ {self.obs_shape}')
-
         # Standardize/normalize pixels
         if self.standardize:
-            obs = (obs - self.mean.to(obs.device).view(1, -1, *axes)) / self.stddev.to(obs.device).view(1, -1, *axes)
+            obs = (obs - self.mean.to(obs.device).view(-1, *axes)) / self.stddev.to(obs.device).view(-1, *axes)
         elif self.normalize:
             obs = 2 * (obs - self.low) / (self.high - self.low) - 1
 
+        try:
+            channel_dim = (1,) * (not axes)  # At least 1 channel dim and spatial dim
+            obs = obs.reshape(-1, *channel_dim, *self.obs_shape)  # Validate shape, collapse batch dims
+        except RuntimeError:
+            raise RuntimeError('\nObs shape does not broadcast to pre-defined obs shape '
+                               f'{tuple(obs.shape[1:])}, ≠ {self.obs_shape}')
+
         # Optionally append a 1D context to channels, broadcasting
-        obs = torch.cat([obs, *[c.reshape(obs.shape[0], c.shape[-1], *axes).expand(-1, -1, *obs.shape[2:])
+        obs = torch.cat([obs, *[c.reshape(obs.shape[0], c.shape[-1], *axes or (1,)).expand(-1, -1, *obs.shape[2:])
                                 for c in context]], 1)
 
         # CNN encode
@@ -100,27 +100,43 @@ class CNNEncoder(nn.Module):
         return h
 
 
-# Adapts a 2d CNN to a smaller dimensionality (in case an image's spatial dim < kernel size)
+# Adaptive Eyes
 def adapt_cnn(block, obs_shape):
-    axes = (1,) * (3 - len(obs_shape))  # Spatial axes for dynamic input dims
-    obs_shape = tuple(obs_shape) + axes
+    """
+    Adapts a 2d CNN to a smaller dimensionality or truncates adaptively (in case an image's spatial dim < kernel size)
+    """
+    name = type(block).__name__
+    Nd = 2 if '2d' in name else 1 if '1d' in name else 0
 
-    if isinstance(block, (nn.Conv2d, nn.AvgPool2d, nn.MaxPool2d, nn.AdaptiveAvgPool2d)):
-        # Represent hyper-params as tuples
-        if not isinstance(block.kernel_size, tuple):
-            block.kernel_size = (block.kernel_size, block.kernel_size)
-        if not isinstance(block.padding, tuple):
-            block.padding = (block.padding, block.padding)
+    if Nd:
+        # Set attributes of block adaptively according to obs shape
+        for attr in ['kernel_size', 'padding', 'stride', 'dilation', 'output_padding', 'output_size']:
+            if hasattr(block, attr):
+                val = getattr(nn.modules.conv, '_single' if Nd < 2 else '_pair')(getattr(block, attr))  # To tuple
+                if isinstance(val[0], int):
+                    setattr(block, attr, tuple(adapt if 'Adaptive' in name else min(dim, adapt)
+                                               for dim, adapt in zip(val, obs_shape[1:])))  # Truncate
 
-        # Set them to adapt to obs shape (2D --> 1D, etc) via contracted kernels / suitable padding
-        block.kernel_size = tuple(min(kernel, obs) for kernel, obs in zip(block.kernel_size, obs_shape[-2:]))
-        block.padding = tuple(0 if obs <= pad else pad for pad, obs in zip(block.padding, obs_shape[-2:]))
+        # Update 2d operation to 1d if needed
+        if len(obs_shape) < Nd + 1:
+            block.forward = getattr(nn, name.replace('2d', '1d')).forward.__get__(block)
 
-        # Contract the CNN kernels accordingly
-        if isinstance(block, nn.Conv2d):
-            block.weight = nn.Parameter(block.weight[:, :, :block.kernel_size[0], :block.kernel_size[1]])
-    elif hasattr(block, 'modules'):
+            # Contract
+            if isinstance(block, (nn.Conv2d, nn.ConvTranspose2d)):
+                block.weight = nn.Parameter(block.weight[:, :, :, 0])
+                replace = nn.Conv1d if isinstance(block, nn.Conv2d) else nn.ConvTranspose1d
+                block._conv_forward = replace._conv_forward.__get__(block, type(block))
+
+        # Truncate
+        if hasattr(block, '_conv_forward'):
+            block.weight = nn.Parameter(block.weight[:, :, :block.kernel_size[0]] if len(obs_shape) < 3
+                                        else block.weight[:, :, :block.kernel_size[0], :block.kernel_size[1]])
+        elif hasattr(block, '_check_input_dim'):
+            block._check_input_dim = lambda *_: None
+    elif hasattr(block, 'modules') and name != 'TIMM':
         for layer in block.children():
             # Iterate through all layers
-            adapt_cnn(layer, obs_shape[-3:])
-            obs_shape = Utils.cnn_feature_shape(obs_shape[-3:], layer)
+            adapt_cnn(layer, obs_shape)  # Dimensionality-adaptivity
+            # Account for multiple streams in Residual
+            if name != 'Residual' or block.down_sample is None or layer == block.down_sample:
+                obs_shape = Utils.cnn_feature_shape(obs_shape, layer)  # Update shape

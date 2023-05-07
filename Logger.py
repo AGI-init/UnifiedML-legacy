@@ -9,6 +9,7 @@ from pathlib import Path
 from termcolor import colored
 
 import numpy as np
+import pandas as pd
 
 import torch
 
@@ -31,7 +32,7 @@ def format(log, log_name):
 
 
 class Logger:
-    def __init__(self, task, seed, generate=False, path='.', aggregation='mean', wandb=False):
+    def __init__(self, task, seed, generate=False, path='.', aggregation='mean', log_actions=False, wandb=False):
 
         self.path = path
         Path(self.path).mkdir(parents=True, exist_ok=True)
@@ -41,6 +42,9 @@ class Logger:
 
         self.logs = {}
 
+        # "Predicted vs. Actual" - logged only for classify for now
+        self.predicted = {} if log_actions else None
+
         self.aggregation = aggregation  # mean, median, last, max, min, or sum
         self.default_aggregations = {'step': np.ma.max, 'frame': np.ma.max, 'episode': np.ma.max, 'epoch': np.ma.max,
                                      'time': np.ma.max, 'fps': np.ma.mean}
@@ -48,7 +52,7 @@ class Logger:
         self.wandb = 'uninitialized' if wandb \
             else None
 
-    def log(self, log=None, name="Logs", dump=False):
+    def log(self, log=None, name="Logs", exp=None, dump=False):
         if log is not None:
 
             if name not in self.logs:
@@ -61,6 +65,16 @@ class Logger:
                     item = item.detach().cpu().numpy()
                 logs[log_name] = logs[log_name] + [item] if log_name in logs else [item]
 
+            if self.predicted is not None and exp is not None:
+                for exp in exp:
+                    if name not in self.predicted:
+                        self.predicted[name] = {'Predicted': [], 'Actual': []}
+                    self.predicted[name]['Predicted'].append(exp.action.squeeze())
+                    self.predicted[name]['Actual'].append(exp.label.squeeze())
+                    # Corner case when Eval batch size is 1, batch dim gets squeezed out
+                    for key, value in self.predicted[name].items():
+                        value[-1].shape = value[-1].shape or (1,)
+
         if dump:
             self.dump_logs(name)
 
@@ -72,6 +86,7 @@ class Logger:
                     agg = self.aggregate(log_name)
                     self.logs[name][log_name] = agg(self.logs[name][log_name])
                 self._dump_logs(self.logs[name], name=name)
+                self.dump_actions(self.logs[name], name=name)
                 del self.logs[name]
         else:
             # Iterate through just the named log
@@ -81,8 +96,25 @@ class Logger:
                 agg = self.aggregate(log_name)
                 self.logs[name][log_name] = agg(self.logs[name][log_name])
             self._dump_logs(self.logs[name], name=name)
+            self.dump_actions(self.logs[name], name=name)
             self.logs[name] = {}
             del self.logs[name]
+
+    def dump_actions(self, logs, name):
+        if self.predicted is not None and name in self.predicted and len(self.predicted[name]['Predicted']) > 0 \
+                and len(self.predicted[name]['Actual']) > 0:
+            assert 'step' in logs
+
+            file_name = Path(self.path) / f'{self.task}_{self.seed}_Predicted_vs_Actual_{name}.csv'
+
+            for key in self.predicted[name]:
+                self.predicted[name][key] = np.concatenate(self.predicted[name][key])
+
+            df = pd.DataFrame(self.predicted[name])
+            df['Step'] = int(logs['step'])
+            df.to_csv(file_name, index=False)
+
+            self.predicted[name] = {'Predicted': [], 'Actual': []}
 
     # Aggregate list of scalars or batched-values of arbitrary lengths
     def aggregate(self, log_name):

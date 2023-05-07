@@ -8,18 +8,20 @@ obs_spec: ???  # To be specified later
 action_spec: ???  # To be specified later
 num_actions: 1
 standardize: true
-norm: true  # Note: ignored if standardizing
-trunk_dim: 50
+norm: true  # Note: ignored / mutually exclusive if standardize
+z_dim: 50  # Shorthand for trunk_dim (Generator noise input dim)
+trunk_dim: ${z_dim}
 hidden_dim: 1024
-explore_steps: 2000
+rand_steps: 2000
 lr: 1e-4
 lr_decay_epochs: null
 weight_decay: 0
 ema_decay: 0.99
 # Domains
 discrete: ???  # To be specified later, defaults per respective task
-online: true  # Reverse-Shorthand for offline
+online: true  # Shorthand for not offline
 offline: ${not:${online}}  # Defaults to true for classify tasks
+stream: false
 RL: true  # Defaults to false for classify tasks
 supervise: true
 generate: false
@@ -28,9 +30,17 @@ Env: ???  # To be specified later, defaults per respective task
 env:
   _target_: ${Env}
   _recursive_: false
+  subset: null
+  Transform: null
+  transform:
+    _target_: ${env.Transform}
 Dataset: null  # Defaults per respective Classify task
+TestDataset: null
 dataset:
   _target_: ${Dataset}
+  _recursive_: false
+test_dataset:
+  _target_: ${TestDataset}
   _recursive_: false
 suite: ???  # To be specified later, defaults per respective task
 task_name: ???  # To be specified later, defaults per respective task
@@ -38,6 +48,8 @@ frame_stack: 3
 truncate_episode_steps: 1000
 action_repeat: 1
 # Replay
+RAM_capacity: 1000000  # Shorthand for capacity
+capacity: ${RAM_capacity}
 nstep: 10
 batch_size: 256
 discount: 0.99
@@ -54,19 +66,24 @@ ema: false
 save: true
 save_per_steps: 0
 save_path: ./Checkpoints/${experiment}/${format:${Agent}}/${environment.suite}/${task_name}_${seed}.pt
+load_path: ${save_path}
 load: false
 load_per_steps: 0
 # Logging
-log_video: ${generate}
+vlog: ${generate}  # Shorthand for render
+render: ${vlog}  # Shorthand for log_media
+log_media: ${render}
 log_per_episodes: 1
 # Plotting
 plot_per_steps: 50000
 # Misc
 device: null
 parallel: false
-num_workers: 4
+num_workers: 8
+autocast: false  # Shorthand for mixed_precision
+mixed_precision: ${autocast}
 # Experiment
-Agent: Agents.DQNAgent
+Agent: Agents.AC2Agent
 seed: 1
 experiment: Exp
 
@@ -80,6 +97,7 @@ environment:
   truncate_episode_steps: ${truncate_episode_steps}
   action_repeat: ${action_repeat}
   offline: ${offline}
+  stream: ${stream}
   generate: ${generate}
   seed: ${seed}
 
@@ -99,9 +117,8 @@ agent:
   weight_decay: ${weight_decay}
   ema_decay: ${ema_decay}
   ema: ${ema}
-  explore_steps: ${explore_steps}
+  rand_steps: ${rand_steps}
   stddev_schedule: ${stddev_schedule} # Specified per task
-  stddev_clip: 0.3
   discrete: ${discrete}
   RL: ${RL}
   supervise: ${supervise}
@@ -115,19 +132,21 @@ replay:
   _recursive_: false
   batch_size: ${batch_size}
   num_workers: ${num_workers}
-  capacity: 1000000
-  obs_spec: ${obs_spec}
-  action_spec: ${action_spec}
+  capacity: ${capacity}
   suite: ${suite}
   task: ${task_name}
+  obs_spec: ${obs_spec}
+  action_spec: ${action_spec}
   frame_stack: ${frame_stack}
   nstep: ${nstep}
   discount: ${discount}
   transform: ${transform}
+  env: ${env}
   offline: ${offline}
   generate: ${generate}
+  stream: ${stream}
   save: false
-  load: false
+  load: ${load}
   path: ./Datasets/ReplayBuffer/${experiment}/${format:${Agent}}/${environment.suite}/${task_name}_${seed}_Memories
 
 logger:
@@ -137,6 +156,7 @@ logger:
   seed: ${seed}
   generate: ${generate}
   aggregation: mean
+  log_actions: false
   wandb: false
 
 vlogger:
@@ -152,15 +172,14 @@ plotting:
   plot_agents: null
   plot_suites: null
   plot_tasks: null
-  steps: ${train_steps}
+  steps: null
   write_tabular: false
-  plot_bar: true
   plot_train: false
   title: UnifiedML
   x_axis: Step
   verbose: false
 
-# Can optionally pass in custom architectures, optimizers, schedulers, etc.
+# -- Language --
 
 Aug: null  # Shorthand for recipes.aug._target_
 
@@ -174,6 +193,9 @@ Discriminator: null  # Shorthand for Q_head --> recipes.critic.Q_head._target_
 Predictor: ${Generator}  # Shorthand for Pi_head --> recipes.actor.Pi_head._target_
 Pi_head: ${Predictor}  # Shorthand for recipes.actor.Pi_head._target_
 Q_head: ${Discriminator}  # Shorthand for recipes.critic.Q_head._target_
+
+Policy: null  # Shorthand for recipes.creator.policy._target_
+ActionExtractor: null  # Shorthand for recipes.creator.action_extractor._target_
 
 Optim: null  # Shorthand for recipes.<block>.optim._target_ ,  e.g. python Run.py Optim=Utils.torch.optim.SGD
 Scheduler: null  # Shorthand for recipes.<block>.scheduler._target_
@@ -199,10 +221,55 @@ discriminator:  # Shorthand for q_head
   _target_: ${Q_head}
 q_head:
   _default_: ${discriminator}
+policy:
+  _target_: ${Policy}
+action_extractor:
+  _target_: ${ActionExtractor}
+
+# Global optimizers and schedulers
 optim:
   _target_: ${Optim}
 scheduler:
   _target_: ${Scheduler}
+
+# Per-block optimizers and schedulers
+encoder:
+  Optim: ${optim._target_}
+  Scheduler: ${scheduler._target_}
+  optim:
+    _target_: ${encoder.Optim}
+    _default_: ${optim}
+  scheduler:
+    _target_: ${encoder.Scheduler}
+    _default_: ${scheduler}
+actor:
+  Optim: ${optim._target_}
+  Scheduler: ${scheduler._target_}
+  optim:
+    _target_: ${actor.Optim}
+    _default_: ${optim}
+  scheduler:
+    _target_: ${actor.Scheduler}
+    _default_: ${scheduler}
+critic:
+  Optim: ${optim._target_}
+  Scheduler: ${scheduler._target_}
+  optim:
+    _target_: ${critic.Optim}
+    _default_: ${optim}
+  scheduler:
+    _target_: ${critic.Scheduler}
+    _default_: ${scheduler}
+creator:
+  temp_schedule: ${stddev_schedule}
+  Optim: ${optim._target_}
+  Scheduler: ${scheduler._target_}
+  optim:
+    _target_: ${creator.Optim}
+    _default_: ${optim}
+  scheduler:
+    _target_: ${creator.Scheduler}
+    _default_: ${scheduler}
 
 # Recipes
 _recipes:
@@ -210,18 +277,24 @@ _recipes:
   encoder:
     Eyes: ${eyes}
     pool: ${pool}
-    optim: ${optim}
-    scheduler: ${scheduler}
+    optim: ${encoder.optim}
+    scheduler: ${encoder.scheduler}
   actor:
     trunk: ${pi_trunk}
     Pi_head: ${pi_head}
-    optim: ${optim}
-    scheduler: ${scheduler}
+    optim: ${actor.optim}
+    scheduler: ${actor.scheduler}
   critic:
     trunk: ${q_trunk}
     Q_head: ${q_head}
-    optim: ${optim}
-    scheduler: ${scheduler}
+    optim: ${critic.optim}
+    scheduler: ${critic.scheduler}
+  creator:
+    temp_schedule: ${creator.temp_schedule}
+    policy: ${policy}
+    ActionExtractor: ${action_extractor}
+    optim: ${creator.optim}
+    scheduler: ${creator.scheduler}
 
 recipes: ${allow_objects:${_recipes}}
 
@@ -232,3 +305,6 @@ hydra:
   sweep:
     dir: ./
     subdir: ./
+  job:
+    env_set:
+      PYTHONWARNINGS: 'ignore:resource_tracker'  # Disables warning

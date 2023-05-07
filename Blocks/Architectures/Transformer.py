@@ -29,7 +29,7 @@ class AttentionBlock(nn.Module):
             input_shape = (input_shape,)
 
         if channels_first:
-            input_shape = list(reversed(input_shape))  # Assumes invariance to spatial dimensions
+            input_shape = list(reversed(input_shape))  # Move channel dim to last
 
         # Multi-Head Dot-Product Attention (MHDPA) from inputs to context
         self.attend = CrossAttention(input_shape, num_heads, context_dim, query_key_dim, None, talking_heads, rela,
@@ -89,13 +89,13 @@ class CrossAttentionBlock(AttentionBlock):
 
 
 class SelfAttentionBlock(AttentionBlock):
-    """A.K.A. a Transformer pre-norm block except input=context"""
+    """A.K.A. a Transformer pre-norm block, same as the Cross-Attention Block except input = context"""
     def forward(self, input, *_):
         return super().forward(input)
 
 
 class LearnableFourierPositionalEncodings(nn.Module):
-    def __init__(self, input_shape=(32,), fourier_dim=None, hidden_dim=None, output_dim=None, channels_first=True):
+    def __init__(self, input_shape=(32,), fourier_dim=None, hidden_dim=None, output_shape=None, channels_first=True):
         """
         Learnable Fourier Features (https://arxiv.org/pdf/2106.02795.pdf)
         Generalized to adapt to arbitrary spatial dimensions. For consistency with Vision models,
@@ -114,7 +114,7 @@ class LearnableFourierPositionalEncodings(nn.Module):
         self.fourier_dim = -(-fourier_dims // 2)  # Round up
 
         self.hidden_dim = hidden_dim or self.input_dim
-        self.output_dim = output_dim or self.input_dim
+        self.output_dim = Utils.prod(output_shape) or self.input_dim
 
         self.scale = 1 / math.sqrt(self.fourier_dim)
 

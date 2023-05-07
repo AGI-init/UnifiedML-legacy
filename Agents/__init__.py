@@ -5,10 +5,8 @@
 from Agents.Random import RandomAgent
 
 from Agents.DQN import DQNAgent
+from Agents.DuelingDQN import DuelingDQNAgent
+from Agents.HardDQN import HardDQNAgent
 from Agents.DrQV2 import DrQV2Agent
-from Agents.SPR import SPRAgent
 
 from Agents.Lermanbots.AC2 import AC2Agent
-from Agents.Lermanbots.Experiment import ExperimentAgent
-
-

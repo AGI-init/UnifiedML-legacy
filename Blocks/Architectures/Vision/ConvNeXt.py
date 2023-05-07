@@ -2,12 +2,10 @@
 #
 # This source code is licensed under the MIT license found in the
 # MIT_LICENSE file in the root directory of this source tree.
-import math
-
 import torch
 import torch.nn as nn
 
-from Blocks.Architectures.Vision.CNN import AvgPool
+from Blocks.Architectures.Vision.CNN import AvgPool, cnn_broadcast
 
 import Utils
 
@@ -22,52 +20,54 @@ class ConvNeXtBlock(nn.Module):
                                  nn.Linear(4 * dim, dim))
         self.gamma = nn.Parameter(torch.full((dim,), 1e-6))
 
-    def repr_shape(self, c, h, w):
-        return Utils.cnn_feature_shape([c, h, w], self.conv)
+    def repr_shape(self, *_):
+        return Utils.cnn_feature_shape(_, self.conv)
 
     def forward(self, x):
         input = x
         x = self.conv(x)
-        x = x.transpose(-1, -3)  # Channel swap
+        x = x.transpose(1, -1)  # Channel swap
         x = self.ln(x)
         x = self.mlp(x)
         x = self.gamma * x
-        x = x.transpose(-1, -3)  # Channel swap
-        return x + input
+        x = x.transpose(1, -1)  # Channel swap
+        assert x.shape == input.shape, \
+            f'Could not apply residual to shapes {input.shape} and {x.shape}'  # Can fail for low-resolutions
+        return x + input  # Can add DropPath on x (e.g. github.com/facebookresearch/ConvNeXt)
 
 
 class ConvNeXt(nn.Module):
-    r""" ConvNeXt  `A ConvNet for the 2020s` https://arxiv.org/pdf/2201.03545.pdf"""
-    def __init__(self, input_shape, dims=None, depths=None, output_dim=None):
+    """
+    ConvNeXt  `A ConvNet for the 2020s` (https://arxiv.org/pdf/2201.03545.pdf)
+    """
+    def __init__(self, input_shape, dims=[128, 256, 512, 1024], depths=[3, 3, 27, 3], output_shape=None):
         super().__init__()
 
-        self.input_shape = input_shape
-        channels_in = input_shape[0]
+        self.input_shape, output_dim = Utils.to_tuple(input_shape), Utils.prod(output_shape)
 
-        if dims is None:
-            dims = [96, 192, 32]
+        in_channels = self.input_shape[0]
 
-        dims = [channels_in] + dims
+        dims = [in_channels, *dims]
 
-        if depths is None:
-            depths = [1, 1, 3]
-
-        self.trunk = nn.Identity()
-
-        self.ConvNeXt = nn.Sequential(*[nn.Sequential(nn.Conv2d(dims[i],
+        self.ConvNeXt = nn.Sequential(nn.AdaptiveAvgPool2d(224) if len(self.input_shape) > 2
+                                      else nn.Identity(),  # ConvNeXt supports 224-size images, we scale as such when 2d
+                                      *[nn.Sequential(nn.Conv2d(dims[i],
                                                                 dims[i + 1],
                                                                 kernel_size=4 if i == 0 else 2,
                                                                 stride=4 if i == 0 else 2),  # Conv
-                                                      nn.Sequential(Utils.ChannelSwap(),
+                                                      nn.Sequential(Utils.ChannelSwap(),  # TODO Channel axis as 1 not-3
                                                                     nn.LayerNorm(dims[i + 1]),
-                                                                    Utils.ChannelSwap()) if i < 3
+                                                                    Utils.ChannelSwap()) if i < len(depths) - 1
                                                       else nn.Identity(),  # LayerNorm
                                                       *[ConvNeXtBlock(dims[i + 1])
                                                         for _ in range(depth)])  # Conv, MLP, Residuals
                                         for i, depth in enumerate(depths)])
 
-        self.project = nn.Identity() if output_dim is None \
-            else nn.Sequential(AvgPool(), nn.Linear(dims[-1], output_dim))
+        self.repr = nn.Identity()  # Optional output projection
+
+        if output_dim is not None:
+            # Optional output projection
+            self.repr = nn.Sequential(AvgPool(), nn.Linear(dims[-1], output_dim))
 
         def weight_init(m):
             if isinstance(m, (nn.Conv2d, nn.Linear)):
@@ -76,31 +76,25 @@ class ConvNeXt(nn.Module):
 
         self.apply(weight_init)
 
-    def repr_shape(self, c, h, w):
-        return Utils.cnn_feature_shape([c, h, w], self.trunk, self.ConvNeXt, self.project)
+    def repr_shape(self, *_):
+        return Utils.cnn_feature_shape(_, self.ConvNeXt, self.repr)
 
     def forward(self, *x):
         # Concatenate inputs along channels assuming dimensions allow, broadcast across many possibilities
-        x = torch.cat(
-            [context.view(*context.shape[:-3], -1, *self.input_shape[1:]) if len(context.shape) > 3
-             else context.view(*context.shape[:-1], -1, *self.input_shape[1:]) if context.shape[-1]
-                                                                                  % math.prod(self.input_shape[1:]) == 0
-             else context.view(*context.shape, 1, 1).expand(*context.shape, *self.input_shape[1:])
-             for context in x if context.nelement() > 0], dim=-3)
-        # Conserve leading dims
-        lead_shape = x.shape[:-3]
-        # Operate on last 3 dims
-        x = x.view(-1, *x.shape[-3:])
+        lead_shape, x = cnn_broadcast(self.input_shape, x)
 
-        x = self.trunk(x)
         x = self.ConvNeXt(x)
-        x = self.project(x)
+        x = self.repr(x)
 
-        # Restore leading dims
+        # Restore lead dims
         out = x.view(*lead_shape, *x.shape[1:])
         return out
 
 
 class ConvNeXtTiny(ConvNeXt):
-    def __init__(self, input_shape, output_dim=None):
-        super().__init__(input_shape, [96, 192, 384, 768], [3, 3, 9, 3], output_dim)
+    def __init__(self, input_shape, output_shape=None):
+        super().__init__(input_shape, [96, 192, 384, 768], [3, 3, 9, 3], output_shape)
+
+
+class ConvNeXtBase(ConvNeXt):
+    """Pseudonym"""

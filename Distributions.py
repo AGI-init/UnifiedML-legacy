@@ -12,24 +12,25 @@ import Utils
 class TruncatedNormal(Normal):
     """
     A Gaussian Normal distribution generalized to multi-action sampling and the option to clip standard deviation.
-    Consistent with torch.distributions.Normal
     """
     def __init__(self, loc, scale, low=None, high=None, eps=1e-6, stddev_clip=None):
         super().__init__(loc, scale)
 
-        self.low, self.high = low, high
-        self.eps = eps
-        self.stddev_clip = stddev_clip
+        # Clip range of samples
+        self.low, self.high = low, high  # Ranges
+        self.eps = eps  # Fringes
 
-    def log_prob(self, value, keptdim=True):
+        # Clip range of standard deviation
+        self.stddev_clip = stddev_clip  # -low, high
+
+    def log_prob(self, value):
         if value.shape[-len(self.loc.shape):] == self.loc.shape:
-            return super().log_prob(value)
+            return super().log_prob(value)  # Inherit log_prob(•)
         else:
             # To account for batch_first=True
             b, *shape = self.loc.shape  # Assumes a single batch dim
             return super().log_prob(value.view(b, -1, *shape).transpose(0, 1)).transpose(0, 1).view(value.shape)
 
-    # No grad, defaults to no clip, batch dim first
     def sample(self, sample_shape=1, to_clip=False, batch_first=True, keepdim=True):
         with torch.no_grad():
             return self.rsample(sample_shape, to_clip, batch_first, keepdim)
@@ -45,7 +46,7 @@ class TruncatedNormal(Normal):
         dev = rand * self.scale.expand(shape)  # Deviate
 
         if to_clip:
-            dev = Utils.rclamp(dev, -self.stddev_clip, self.stddev_clip)  # Don't explore /too/ much
+            dev = Utils.rclamp(dev, -self.stddev_clip, self.stddev_clip)  # Don't explore /too/ much, clip std
         x = self.loc.expand(shape) + dev
 
         if batch_first:
@@ -56,7 +57,7 @@ class TruncatedNormal(Normal):
 
         if self.low is not None and self.high is not None:
             # Differentiable truncation
-            return Utils.rclamp(x, self.low + self.eps, self.high - self.eps)
+            return Utils.rclamp(x, self.low + self.eps, self.high - self.eps)  # Clip sample
 
         return x
 
@@ -64,28 +65,26 @@ class TruncatedNormal(Normal):
 class NormalizedCategorical(Categorical):
     """
     A Categorical that normalizes samples, allows sampling along specific "dim"s, and can temperature-weigh the softmax.
-    Consistent with torch.distributions.Categorical
     """
-    def __init__(self, probs=None, logits=None, low=None, high=None, temp=torch.ones(()), dim=-1):
-        if probs is not None:
-            probs = probs.movedim(dim, -1)
+    def __init__(self, logits, low=None, high=None, temp=torch.ones(()), dim=-1):
+        super().__init__(logits=logits.movedim(dim, -1))
 
-        if logits is not None:
-            temp = temp.expand_as(logits).movedim(dim, -1)
+        temp = torch.as_tensor(temp, device=logits.device, dtype=logits.dtype).expand_as(logits).movedim(dim, -1)
 
-            logits = logits.movedim(dim, -1) / temp
+        self.logits /= temp
 
-        super().__init__(probs, logits)
-
-        self.low, self.high = low, high  # Range to normalize to
+        self.low, self.high = (None, None) if low == 0 and high == logits.shape[-1] else (low, high)
         self.dim = dim
 
-        self.best = self.normalize(logits.argmax(-1, keepdim=True).transpose(-1, self.dim))
-
-    def rsample(self, sample_shape=1, batch_first=True):
-        sample = self.sample(sample_shape, batch_first)  # Note: not differentiable
-
-        return sample
+    def log_prob(self, value=None):
+        if value is None:
+            return self.logits.movedim(self.dim, -1)
+        elif value.shape[-self.logits.dim():] == self.logits.shape:
+            return super().log_prob(self.un_normalize(value))  # Un-normalized log_prob(•)
+        else:
+            # To account for batch_first=True
+            b, *shape = self.logits.shape  # Assumes a single batch dim
+            return super().log_prob(self.un_normalize(value.view(b, -1, *shape[:-1]).transpose(0, 1))).transpose(0, 1)
 
     def sample(self, sample_shape=1, batch_first=True):
         if isinstance(sample_shape, int):
@@ -98,7 +97,15 @@ class NormalizedCategorical(Categorical):
 
         return self.normalize(sample)
 
+    def rsample(self, *args, **kwargs):
+        return self.sample(*args, **kwargs)  # Non-differentiable
+
     def normalize(self, sample):
         # Normalize -> [low, high]
         return sample / (self.logits.shape[-1] - 1) * (self.high - self.low) + self.low if self.low or self.high \
             else sample
+
+    def un_normalize(self, value):
+        # Inverse of normalize -> indices
+        return (value - self.low) / (self.high - self.low) * (self.logits.shape[-1] - 1) if self.low or self.high \
+            else value

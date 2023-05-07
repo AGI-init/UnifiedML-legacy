@@ -37,8 +37,8 @@ class Atari:
 
     Recommended: Discrete environments should have a conversion strategy for adapting continuous actions (e.g. argmax)
 
-    An "exp" (experience) is an AttrDict consisting of "obs", "action" (prior to adapting), "reward", "label", "step"
-    numpy values which can be NaN. Must include a batch dim.
+    An "exp" (experience) is an AttrDict consisting of "obs", "action" (prior to adapting), "reward", and "label"
+    as numpy arrays with batch dim or None. "reward" is an exception: should be numpy array, can be empty/scalar/batch.
 
     ---
 
@@ -47,7 +47,7 @@ class Atari:
     """
     def __init__(self, task='pong', seed=0, frame_stack=3, action_repeat=4,
                  screen_size=84, color='grayscale', sticky_action_proba=0, action_space_union=False,
-                 last_2_frame_pool=True, terminal_on_life_loss=True, **kwargs):  # Atari-specific
+                 last_2_frame_pool=True, terminal_on_life_loss=False, **kwargs):  # Atari-specific
         self.episode_done = False
 
         # Make env
@@ -71,16 +71,11 @@ class Atari:
                                     )
         except gym.error.NameNotFound as e:
             # If Atari not installed
-            raise gym.error.NameNotFound(str(e) + '\nYou may have not installed the Atari ROMs.\n'
+            raise gym.error.NameNotFound(str(e) + '\nIt\'s possible you haven\'t installed the Atari ROMs.\n'
                                                   'Try the following to install them, as instructed in the README.\n'
-                                                  'Accept the license:\n'
                                                   '$ pip install autorom\n'
-                                                  '$ AutoROM --accept-license\n'
-                                                  'Now, install ROMs:\n'
-                                                  '$ mkdir ./Datasets/Suites/Atari_ROMS\n'
-                                                  '$ AutoROM --install-dir ./Datasets/Suites/Atari_ROMS\n'
-                                                  '$ ale-import-roms ./Datasets/Suites/Atari_ROMS\n'
-                                                  'You should be good to go!')
+                                                  'Now, accept the license to install the ROMs:\n'
+                                                  '$ AutoROM --accept-license')
 
         # Set random seed
         self.env.seed(seed)
@@ -89,7 +84,7 @@ class Atari:
         self.last_2_frame_pool = last_2_frame_pool
         self.last_frame = None
 
-        # Terminal on life loss
+        # Terminal on life loss - Note: Might need to be a "fakeout" reset. Currently resets for real upon life loss.
         self.terminal_on_life_loss = terminal_on_life_loss
         self.lives = None
 
@@ -120,7 +115,7 @@ class Atari:
         _action.shape = self.action_spec['shape']
 
         # Step env
-        reward = 0
+        reward = np.zeros([])
         for _ in range(self.action_repeat):
             obs, _reward, self.episode_done, info = self.env.step(int(_action))  # Atari requires scalar int action
             reward += _reward
@@ -154,14 +149,7 @@ class Atari:
         obs = np.expand_dims(obs, 0)
 
         # Create experience
-        exp = {'obs': obs, 'action': action, 'reward': reward, 'label': None, 'step': None}
-
-        # Scalars/NaN to numpy
-        for key in exp:
-            if np.isscalar(exp[key]) or exp[key] is None or type(exp[key]) == bool:
-                exp[key] = np.full([1, 1], exp[key], dtype=getattr(exp[key], 'dtype', 'float32'))
-            elif len(exp[key].shape) in [0, 1]:  # Add batch dim
-                exp[key].shape = (1, *(exp[key].shape or [1]))
+        exp = {'obs': obs, 'action': action, 'reward': reward, 'label': None}
 
         self.exp = AttrDict(exp)  # Experience
 
@@ -199,14 +187,7 @@ class Atari:
         obs = np.expand_dims(obs, 0)
 
         # Create experience
-        exp = {'obs': obs, 'action': None, 'reward': 0, 'label': None, 'step': None}
-
-        # Scalars/NaN to numpy
-        for key in exp:
-            if np.isscalar(exp[key]) or exp[key] is None or type(exp[key]) == bool:
-                exp[key] = np.full([1, 1], exp[key], dtype=getattr(exp[key], 'dtype', 'float32'))
-            elif len(exp[key].shape) in [0, 1]:  # Add batch dim
-                exp[key].shape = (1, *(exp[key].shape or [1]))
+        exp = {'obs': obs, 'action': None, 'reward': np.zeros([]), 'label': None}
 
         # Reset frame stack
         self.frames.clear()
@@ -240,6 +221,6 @@ class Atari:
 # Access a dict with attribute or key (purely for aesthetic reasons)
 class AttrDict(dict):
     def __init__(self, _dict):
-        super(AttrDict, self).__init__()
+        super().__init__()
         self.__dict__ = self
         self.update(_dict)

@@ -15,8 +15,8 @@ if __name__ == '__main__':
     for task in easy + medium + hard:
         f = open(f"./{task.lower()}.yaml", "w")
         f.write(fr"""defaults:
-      - _self_
- 
+  - _self_
+
 Env: Datasets.Suites.DMC.DMC
 suite: dmc
 task_name: {task}

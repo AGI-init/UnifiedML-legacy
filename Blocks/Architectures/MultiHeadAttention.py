@@ -19,7 +19,7 @@ class Attention(nn.Module):
 
     All you need
 
-    Generalized to many-dimensionality input shapes, and includes options for "talking heads" and "ReLA".
+    Generalized to any-dimensionality input shapes, and includes options for "talking heads" and "ReLA".
     For consistency with Vision models, defaults to channels-first! Assumes input & context have batch + spatial dim(s).
     """
     def __init__(self, input_shape=(32,), num_heads=None, context_dim=None, query_key_dim=None, value_dim=None,
@@ -42,7 +42,7 @@ class Attention(nn.Module):
         assert self.value_dim % self.num_heads == self.query_key_dim % self.num_heads == 0, \
             f'Value dim={self.value_dim}, QueryKey dim={self.query_key_dim} must be divisible by heads={self.num_heads}'
 
-        # Linear QKV-projections
+        # Linear QKV-projections (Perhaps just substitute with the more general Conv)
         self.to_query = nn.Linear(self.input_dim, self.query_key_dim, bias=False)
         self.to_key_value = nn.Linear(self.context_dim, self.query_key_dim + self.value_dim, bias=False)
 
@@ -97,7 +97,7 @@ class Attention(nn.Module):
         # Multiply (W = Q * K)
         self.saved_attention_weights = torch.einsum('b h i d, b h j d -> b h i j', query, key)
 
-        # Normalize
+        # Normalize - disabled for now
         # if not hasattr(self, 'rela'):
         #     self.saved_attention_weights -= self.saved_attention_weights.amax(-1, keepdim=True).detach()
 
@@ -130,7 +130,7 @@ class MHDPA(Attention):
 
 
 class CrossAttention(Attention):
-    """Cross-attention, pseudonym, same as Attention"""
+    """Cross-attention, pseudonym for Attention"""
 
 
 class SelfAttention(Attention):

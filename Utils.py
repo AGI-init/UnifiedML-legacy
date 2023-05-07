@@ -4,6 +4,7 @@
 # MIT_LICENSE file in the root directory of this source tree.
 import math
 import random
+from functools import cached_property
 import re
 import warnings
 from inspect import signature
@@ -20,6 +21,7 @@ from torch.optim import *
 from torch.optim.lr_scheduler import *
 
 from torch.nn import Identity, Flatten  # For direct accessibility via command line
+from torchvision import transforms  # For direct accessibility via command line
 from Blocks.Augmentations import RandomShiftsAug, IntensityAug  # For direct accessibility via command line
 from Blocks.Architectures import *  # For direct accessibility via command line
 
@@ -33,7 +35,7 @@ def set_seeds(seed):
     random.seed(seed)
 
 
-# Initializes run state
+# Initializes seeds, device, and CUDA acceleration
 def init(args):
     # Set seeds
     set_seeds(args.seed)
@@ -43,6 +45,13 @@ def init(args):
 
     args.device = args.device or ('cuda' if torch.cuda.is_available()
                                   else 'mps' if mps and mps.is_available() else 'cpu')
+
+    # CUDA speedup via automatic mixed precision
+    MP.enable(args)
+
+    # CUDA speedup when input sizes don't vary
+    torch.backends.cudnn.benchmark = True
+
     print('Device:', args.device)
 
 
@@ -108,6 +117,9 @@ def load(path, device='cuda', args=None, preserve=(), distributed=False, attr=''
 
 # Simple-sophisticated instantiation of a class or module by various semantics
 def instantiate(args, i=0, **kwargs):
+    if isinstance(args, (DictConfig, dict)):
+        args = DictConfig(args)  # Non-destructive copy
+
     if hasattr(args, '_override_'):
         kwargs.update(args.pop('_override_'))  # For loading old models with new, overridden args
 
@@ -121,6 +133,8 @@ def instantiate(args, i=0, **kwargs):
             if '(' in args._target_ and ')' in args._target_:  # Direct code execution
                 args = args._target_
             else:
+                if 'Utils.' in args._target_:
+                    raise ImportError
                 args._target_ = 'Utils.' + args._target_  # Portal into Utils
                 try:
                     return instantiate(args, i, **kwargs)
@@ -128,9 +142,9 @@ def instantiate(args, i=0, **kwargs):
                     raise e  # Original error if all that doesn't work
         except TypeError as e:
             kwarg = re.search('got an unexpected keyword argument \'(.+?)\'', str(e))
-            if kwarg:
+            if kwarg and kwarg.group(1) not in args:
                 kwargs = {key: kwargs[key] for key in kwargs if key != kwarg.group(1)}
-                return instantiate(args, i, **kwargs)  # Signature matching
+                return instantiate(args, i, **kwargs)  # Signature matching, only for kwargs not args
             raise e  # Original error
 
     if isinstance(args, str):
@@ -138,9 +152,12 @@ def instantiate(args, i=0, **kwargs):
             args = args.replace(f'kwargs.{key}', f'kwargs["{key}"]')  # Interpolation
         args = eval(args)  # Direct code execution
 
+    # Signature matching
+    if isinstance(args, type):
+        _args = signature(args).parameters
+        args = args(**kwargs if 'kwargs' in _args else {key: kwargs[key] for key in kwargs.keys() & _args})
+
     return None if hasattr(args, '_target_') \
-        else args(**{key: kwargs[key]
-                     for key in kwargs.keys() & signature(args).parameters}) if isinstance(args, type) \
         else args[i] if isinstance(args, (list, nn.ModuleList)) \
         else args  # Additional useful ones
 
@@ -151,20 +168,20 @@ def weight_init(m):
         nn.init.orthogonal_(m.weight.data)
         if hasattr(m.bias, 'data'):
             m.bias.data.fill_(0.0)
-    elif isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+    elif isinstance(m, (nn.Conv2d, nn.Conv1d)) or isinstance(m, (nn.ConvTranspose2d, nn.ConvTranspose1d)):
         gain = nn.init.calculate_gain('relu')
         nn.init.orthogonal_(m.weight.data, gain)
         if hasattr(m.bias, 'data'):
             m.bias.data.fill_(0.0)
 
 
-# Initializes model optimizer. Default: AdamW + cosine annealing
+# Initializes model optimizer. Default: AdamW
 def optimizer_init(params, optim=None, scheduler=None, lr=None, lr_decay_epochs=None, weight_decay=None):
     params = list(params)
 
     # Optimizer
     optim = len(params) > 0 and (instantiate(optim, params=params, lr=getattr(optim, 'lr', lr)) or lr
-                                 and AdamW(params, lr=lr, weight_decay=weight_decay))  # Default
+                                 and AdamW(params, lr=lr, weight_decay=weight_decay or 0))  # Default
 
     # Learning rate scheduler
     scheduler = optim and (instantiate(scheduler, optimizer=optim) or lr_decay_epochs
@@ -181,30 +198,30 @@ def update_ema_target(source, target, ema_decay=0):
 
 
 # Compute the output shape of a CNN layer
-def cnn_layer_feature_shape(in_height, in_width, kernel_size=1, stride=1, padding=0, dilation=1):
-    assert in_height and in_width, f'Height and width must be positive integers, got {in_height}, {in_width}'
+def cnn_layer_feature_shape(*spatial_shape, kernel_size=1, stride=1, padding=0, dilation=1):
     if padding == 'same':
-        return in_height, in_width
+        return spatial_shape
+    axes = [size for size in spatial_shape if size]
     if type(kernel_size) is not tuple:
-        kernel_size = [kernel_size, kernel_size]
+        kernel_size = [kernel_size] * len(axes)
     if type(stride) is not tuple:
-        stride = [stride, stride]
+        stride = [stride] * len(axes)
     if type(padding) is not tuple:
-        padding = [padding, padding]
+        padding = [padding] * len(axes)
     if type(dilation) is not tuple:
-        dilation = [dilation, dilation]
-    kernel_size = [min(size, kernel_size[i]) for i, size in enumerate([in_height, in_width])]  # Assumes adaptive
-    padding = [min(size, padding[i]) for i, size in enumerate([in_height, in_width])]  # Assumes adaptive
-    out_height = math.floor(((in_height + (2 * padding[0]) - (dilation[0] * (kernel_size[0] - 1)) - 1) / stride[0]) + 1)
-    out_width = math.floor(((in_width + (2 * padding[1]) - (dilation[1] * (kernel_size[1] - 1)) - 1) / stride[1]) + 1)
-    return out_height, out_width
+        dilation = [dilation] * len(axes)
+    kernel_size = [min(size, kernel_size[i]) for i, size in enumerate(axes)]
+    padding = [min(size, padding[i]) for i, size in enumerate(axes)]  # Assumes adaptive
+    out_shape = [math.floor(((size + (2 * padding[i]) - (dilation[i] * (kernel_size[i] - 1)) - 1) / stride[i]) + 1)
+                 for i, size in enumerate(axes)] + list(spatial_shape[len(axes):])
+    return out_shape
 
 
-# Compute the output shape of a whole CNN
+# Compute the output shape of a whole CNN (or other architecture)
 def cnn_feature_shape(chw, *blocks, verbose=False):
     channels, height, width = chw[0], chw[1] if len(chw) > 1 else None, chw[2] if len(chw) > 2 else None
     for block in blocks:
-        if isinstance(block, (nn.Conv2d, nn.AvgPool2d, nn.MaxPool2d)):
+        if isinstance(block, (nn.Conv2d, nn.AvgPool2d, nn.MaxPool2d, nn.Conv1d, nn.AvgPool1d, nn.MaxPool1d)):
             channels = block.out_channels if hasattr(block, 'out_channels') else channels
             height, width = cnn_layer_feature_shape(height, width,
                                                     kernel_size=block.kernel_size,
@@ -214,21 +231,30 @@ def cnn_feature_shape(chw, *blocks, verbose=False):
             channels = block.out_features  # Assumes channels-last if linear
         elif isinstance(block, nn.Flatten) and (block.start_dim == -3 or block.start_dim == 1):
             channels, height, width = channels * (height or 1) * (width or 1), None, None  # Placeholder height/width
-        elif isinstance(block, nn.AdaptiveAvgPool2d):
-            height, width = block.output_size
+        elif isinstance(block, (nn.AdaptiveAvgPool2d, nn.AdaptiveAvgPool1d)):
+            size = to_tuple(block.output_size)  # Can be int
+            pair = size[0] if isinstance(block, nn.AdaptiveAvgPool2d) else None
+            height, width = (size[0], pair) if width is None else size + (pair,) * (2 - len(size))
         elif hasattr(block, 'repr_shape'):
-            chw = block.repr_shape(channels, height, width)
+            chw = block.repr_shape(*chw)
             channels, height, width = chw[0], chw[1] if len(chw) > 1 else None, chw[2] if len(chw) > 2 else None
         elif hasattr(block, 'modules'):
             for layer in block.children():
-                chw = cnn_feature_shape([channels, height, width], layer, verbose=verbose)
+                chw = cnn_feature_shape(chw, layer, verbose=verbose)
                 channels, height, width = chw[0], chw[1] if len(chw) > 1 else None, chw[2] if len(chw) > 2 else None
         if verbose:
-            print(block, (channels, height, width))
+            print(type(block), (channels, height, width))
 
     feature_shape = tuple(size for size in (channels, height, width) if size is not None)
 
     return feature_shape
+
+
+# General-purpose shape pre-computation. Unlike above, uses manual forward pass through model(s).
+def repr_shape(input_shape, *blocks):
+    for block in blocks:
+        input_shape = block(torch.ones(1, *input_shape)).shape[1:]
+    return input_shape
 
 
 # "Ensembles" (stacks) multiple modules' outputs
@@ -249,17 +275,17 @@ class Ensemble(nn.Module):
 
 # Replaces tensor's batch items with Normal-sampled random latent
 class Rand(nn.Module):
-    def __init__(self, size=1, uniform=False):
+    def __init__(self, size=1, output_shape=None, uniform=False):
         super().__init__()
 
-        self.size = size
+        self.output_shape = to_tuple(output_shape or size)
         self.uniform = uniform
 
     def repr_shape(self, *_):
-        return self.size,
+        return self.output_shape
 
     def forward(self, *x):
-        x = torch.randn((x[0].shape[0], self.size), device=x[0].device)
+        x = torch.randn((x[0].shape[0], *self.output_shape), device=x[0].device)
 
         if self.uniform:
             x.uniform_()
@@ -273,7 +299,7 @@ def one_hot(x, num_classes, null_value=0, one_value=1):
     x = x.squeeze(-1).unsqueeze(-1)  # Or do this
     x = x.long()
     shape = x.shape[:-1]
-    nulls = torch.full([*shape, num_classes], null_value, dtype=x.dtype, device=x.device)
+    nulls = torch.full([*shape, num_classes], null_value, dtype=torch.float32, device=x.device)
     return nulls.scatter(len(shape), x, one_value).float()
 
 
@@ -292,12 +318,12 @@ def gather(item, ind, dim=-1, ind_dim=-1):
     """
     Generalizes torch.gather indexing to multi-dim indexing.
 
-    Indexes a specific dimension "dim" in "item"  and any number of subsequent dimensions depending on "ind_dim".
-    The index "ind" can share consecutive dimensions with "item" prior to "dim" or will be batched automatically.
+    Indexes a specific dimension "dim" in "item"  and any number of subsequent dimensions depending on ind.
 
-    Relative coordinates, assume "dim" = "ind_dim":
-    item: [0, ..., N, "dim", N + 2, ..., M], ind: [i, ..., N, "ind_dim", N + 2, ..., j], i ≤ N + 1, j ≤ M + 1
-    --> [0, ..., N, "ind_dim", N + 2, ..., M]
+    Automatically batches/broadcasts batch and tail shapes depending on i and j:
+        item: [item.size(0), ..., item.size(N), item.size(dim), item.size(N + 2), ..., item.size(M)],
+        ind: [item.size(i), ..., item.size(N), ind.size(ind_dim), item.size(N + 2), ..., item.size(j)] where i ≤ N j ≤ M
+        --> [item.size(0), ..., item.size(N), ind.size(ind_dim), item.size(N + 2), ..., item.size(M)]
     """
 
     ind_shape = ind.shape[ind_dim:]  # ["ind_dim", ..., j]
@@ -339,24 +365,29 @@ class Sequential(nn.Module):
     def __init__(self, _targets_, i=0, **kwargs):
         super().__init__()
 
-        modules = nn.ModuleList()
+        self.Sequence = nn.ModuleList()
 
         for _target_ in _targets_:
-            modules.append(instantiate(OmegaConf.create({'_target_': _target_}), i, **kwargs))
+            self.Sequence.append(instantiate(OmegaConf.create({'_target_': _target_}) if isinstance(_target_, str)
+                                             else _target_, i, **kwargs))
 
             if 'input_shape' in kwargs:
-                kwargs['input_shape'] = cnn_feature_shape(kwargs['input_shape'], modules[-1])
-
-        self.Sequence = nn.Sequential(*modules)
+                kwargs['input_shape'] = cnn_feature_shape(kwargs['input_shape'], self.Sequence[-1])
 
     def repr_shape(self, *_):
         return cnn_feature_shape(_, self.Sequence)
 
-    def forward(self, obs):
-        return self.Sequence(obs)
+    def forward(self, obs, *context):
+        out = (obs, *context)
+        # Multi-input/output Sequential
+        for i, module in enumerate(self.Sequence):
+            out = module(*out)
+            if not isinstance(out, tuple) and i < len(self.Sequence) - 1:
+                out = (out,)
+        return out
 
 
-# Swaps image dims between channel-last and channel-first format
+# Swaps image dims between channel-last and channel-first format (Convenient helper)
 class ChannelSwap(nn.Module):
     def repr_shape(self, *_):
         return _[-1], *_[1:-1], _[0]
@@ -367,6 +398,22 @@ class ChannelSwap(nn.Module):
 
 # Convenient helper
 ChSwap = ChannelSwap()
+
+
+# Converts data to torch Tensors and moves them to the specified device as floats
+def to_torch(xs, device=None):
+    return tuple(None if x is None
+                 else torch.as_tensor(x, dtype=torch.float32, device=device) for x in xs)
+
+
+# Converts lists or scalars to tuple, preserving NoneType
+def to_tuple(items: (int, float, bool, list, tuple)):
+    return None if items is None else (items,) if isinstance(items, (int, float, bool)) else tuple(items)
+
+
+# Multiples list items or returns item
+def prod(items: (int, float, bool, list, tuple)):
+    return items if isinstance(items, (int, float, bool)) or items is None else math.prod(items)
 
 
 # Shifts to positive, normalizes to [0, 1]
@@ -386,6 +433,7 @@ class Norm(nn.Module):
 class act_mode:
     def __init__(self, *models):
         super().__init__()
+
         self.models = models
 
     def __enter__(self):
@@ -395,23 +443,85 @@ class act_mode:
                 self.start_modes.append(None)
             else:
                 self.start_modes.append(model.training)
-                model.eval()
+                model.eval()  # Disables things like dropout, etc.
 
     def __exit__(self, *args):
         for model, mode in zip(self.models, self.start_modes):
             if model is not None:
                 model.train(mode)
-        return False
-
-
-# Converts data to torch Tensors and moves them to the specified device as floats
-def to_torch(xs, device=None):
-    return tuple(None if x is None
-                 else torch.as_tensor(x, device=device).float() for x in xs)
 
 
 # Pytorch incorrect (in this case) warning suppression
 warnings.filterwarnings("ignore", message='.* skipping the first value of the learning rate schedule')
+
+
+# Scales gradients for automatic mixed precision training speedup, or updates gradients normally
+class MixedPrecision:
+    def __init__(self):
+        self.mixed_precision_enabled = False  # Corresponds to mixed_precision=true
+        self.ready = False
+        self.models = set()
+
+    @cached_property
+    def scaler(self):
+        return torch.cuda.amp.GradScaler()  # Gradient scaler to magnify imprecise Float16 gradients
+
+    def enable(self, args):
+        self.mixed_precision_enabled = args.mixed_precision and 'cuda' in args.device
+
+    # Backward pass
+    def backward(self, loss, retain_graph=False):
+        if self.ready:
+            loss = self.scaler.scale(loss)
+        loss.backward(retain_graph=retain_graph)  # Backward
+
+    # Optimize
+    def step(self, model):
+        if self.mixed_precision_enabled:
+            if self.ready:
+                # Model must AutoCast-initialize before first call to update
+                assert id(model) in self.models, 'A new model or block is being optimized after the initial learning ' \
+                                                 'update while "mixed_precision=true". ' \
+                                                 'Not supported by lazy-AutoCast. Try "mixed_precision=false".'
+                try:
+                    return self.scaler.step(model.optim)  # Optimize
+                except RuntimeError as e:
+                    if 'step() has already been called since the last update().' in str(e):
+                        e = RuntimeError(
+                            f'The {type(model)} optimizer is being stepped twice while "mixed_precision=true" is '
+                            'enabled. Currently, Pytorch automatic mixed precision only supports stepping an optimizer '
+                            'once per update. Try running with "mixed_precision=false".')
+                    raise e
+
+            # Lazy-initialize AutoCast context
+
+            forward = model.forward
+
+            # Enable Pytorch AutoCast context
+            model.forward = torch.autocast('cuda', dtype=torch.float16)(forward)
+
+            for module in model.children():  # In case parts are shared across blocks e.g. Discrete Critic <- Actor
+                forward = module.forward
+
+                module.forward = torch.autocast('cuda', dtype=torch.float16)(forward)
+
+            # EMA
+            if hasattr(model, 'ema'):
+                forward = model.ema.forward
+
+                model.ema.forward = torch.autocast('cuda', dtype=torch.float16)(forward)
+
+            self.models.add(id(model))
+
+        model.optim.step()  # Optimize
+
+    def update(self):
+        if self.ready:
+            self.scaler.update()  # Update gradient scaler
+        self.ready = True
+
+
+MP = MixedPrecision()  # AutoCast + GradScaler scales gradients for automatic mixed precision training speedup
 
 
 # Backward pass on a loss; clear the grads of models; update EMAs; step optimizers and schedulers
@@ -424,7 +534,7 @@ def optimize(loss, *models, clear_grads=True, backward=True, retain_graph=False,
 
     # Backward
     if backward and loss is not None:
-        loss.backward(retain_graph=retain_graph)
+        MP.backward(loss, retain_graph)  # Backward pass
 
     # Optimize
     if step_optim:
@@ -439,7 +549,7 @@ def optimize(loss, *models, clear_grads=True, backward=True, retain_graph=False,
                 update_ema_target(source=model, target=model.ema, ema_decay=model.ema_decay)
 
             if model.optim:
-                model.optim.step()  # Step optimizer
+                MP.step(model)  # Step optimizer
 
                 if loss is None and clear_grads:
                     model.optim.zero_grad(set_to_none=True)

@@ -10,19 +10,19 @@ from hydra.utils import instantiate
 
 class Environment:
     def __init__(self, env, suite='DMC', task='cheetah_run', frame_stack=1, truncate_episode_steps=1e3, action_repeat=1,
-                 offline=False, generate=False, train=True, seed=0, **kwargs):
+                 offline=False, stream=False, generate=False, train=True, seed=0, **kwargs):
         self.suite = suite.lower()
         self.offline = offline
         self.generate = generate
 
-        # Offline and generate don't use training rollouts!
-        self.disable = (offline or generate) and train
+        # Offline and generate don't use training rollouts! Unless on-policy (stream)
+        self.disable, self.on_policy = (offline or generate) and train, stream
 
         self.truncate_after = train and truncate_episode_steps or inf  # Truncate episodes shorter (inf if None)
 
-        if not self.disable:
-            self.env = instantiate(env, task=task, frame_stack=frame_stack, action_repeat=action_repeat,
-                                   offline=offline, generate=generate, train=train, seed=seed, **kwargs)
+        if not self.disable or stream:
+            self.env = instantiate(env, task=task, frame_stack=int(stream) or frame_stack, action_repeat=action_repeat,
+                                   offline=offline, generate=generate, stream=stream, train=train, seed=seed, **kwargs)
             self.env.reset()
 
         self.action_repeat = getattr(getattr(self, 'env', 1), 'action_repeat', 1)  # Optional, can skip frames
@@ -34,7 +34,7 @@ class Environment:
         if self.daybreak is None:
             self.daybreak = time.time()  # "Daybreak" for whole episode
 
-        experiences = []
+        experiences = [*([self.env.step()] if self.disable and self.on_policy else [])]
         video_image = []
 
         self.episode_done = self.disable
@@ -52,7 +52,7 @@ class Environment:
             if not self.generate:
                 exp = self.env.step(action.cpu().numpy())  # Experience
 
-            exp.update(store)
+            exp.update(**store, step=agent.step)
             experiences.append(exp)
 
             if vlog or self.generate:
