@@ -1,4 +1,4 @@
-![UnifiedMLBanner](https://github.com/AGI-init/UnifiedML/assets/92597756/4d2f8b93-a8f7-4531-8212-773f41329ffd)
+![UnifiedMLBanner](https://github.com/AGI-init/Assets/assets/92597756/f3df44c8-b989-4951-9443-d2b4203b5c4e)
 
 ### Quick Links
 
@@ -24,7 +24,7 @@ Defaults:
 
 Plots, logs, generated images, and videos are automatically stored in: ```./Benchmarking```.
 
-![ApeMan](https://github.com/AGI-init/UnifiedML/assets/92597756/4cdfca5b-dddd-4421-b9ef-d6bcb127b537)
+![ApeMan](https://github.com/AGI-init/Assets/assets/92597756/c0e1fe98-baaa-4e24-aebd-5c3637c99d6d)
 
 Welcome ye, weary Traveller.
 
@@ -99,7 +99,7 @@ conda activate ML
 ## 1. Atari Arcade
 
 <p align="left">
-<img src="https://github.com/AGI-init/UnifiedML/assets/92597756/3ab8829a-aaf9-4a7e-a016-6e19a5ded7c4" width="320">
+<img src="https://github.com/AGI-init/Assets/assets/92597756/497d166c-4f57-4882-9309-fe4a09a75294" width="320">
 <br><i>A collection of retro Atari games.</i>
 </p>
 
@@ -122,7 +122,7 @@ Comes pre-installed! For any issues, consult the [DMC repo](https://github.com/d
 <p align="left">
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=rAai4QzcYbs" target="_blank"><i>:arrow_forward: Click to play</i></a><br>
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=rAai4QzcYbs" target="_blank">
-<img src="https://github.com/AGI-init/UnifiedML/assets/92597756/67f4048e-f1c1-4342-86cd-c4ceb0b252a1" alt="Play video" width="310" />
+<img src="https://github.com/AGI-init/Assets/assets/92597756/9f5f59d1-2ade-4aed-8d13-a966b27356d1" alt="Play video" width="310" />
 </a>
 <br><i>Video of different tasks in action.</i>
 </p>
@@ -131,7 +131,7 @@ Comes pre-installed! For any issues, consult the [DMC repo](https://github.com/d
 
 <p align="left">
 
-<img src="https://github.com/AGI-init/UnifiedML/assets/92597756/1f8f9e6a-4954-42a7-b9c4-7d1be9786b7d" width="320">
+<img src="https://github.com/AGI-init/Assets/assets/92597756/bd66299f-1699-463b-8adb-cf12e8eb0790" width="320">
 <br><i>Eight different ladybug species in the iNaturalist dataset.</i>
 
 </p>
@@ -212,7 +212,7 @@ Save videos with ```vlog=true```.
 :clapper: :movie_camera: -> ```Benchmarking/<experiment>/<agent>/<suite>/<task>_<seed>_Video_Image/```
 
 <p>
-<img src="https://github.com/AGI-init/UnifiedML/assets/92597756/a351d54f-3526-47da-9965-7c33c121481e" width="64" height="84"/>
+<img src="https://github.com/AGI-init/Assets/assets/92597756/4db44aa8-fc38-4497-bffd-1276e43b863b" width="64" height="84"/>
 </p>
 
 Check out [args.yaml](Hyperparams/args.yaml) for the full array of configurable options available, including
@@ -312,7 +312,7 @@ python Run.py task=classify/mnist generate=true
 ```
 
 <p align="left">
-<img src="https://github.com/AGI-init/UnifiedML/assets/92597756/f7980271-5912-4807-8852-dbbec0719aab" width="180">
+<img src="https://github.com/AGI-init/Assets/assets/92597756/a1c4a01e-471c-4d34-bb8c-4fae28643269" width="180">
 <br><i>Synthesized MNIST images, conjured up and imagined by a simple MLP.</i>
 </p>
 
@@ -397,7 +397,7 @@ Click here to learn more about replays
 </summary>
 <br>
 
-<img width="25%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML/assets/92597756/ccbfcc3c-2168-47ce-8b6c-2ec2fde971d9"><br><br>
+<img width="25%" alt="flowchart" src="https://github.com/AGI-init/Assets/assets/92597756/15f749d8-1fcf-4075-bc0d-99fc98f0429d"><br><br>
 
 **In UnifiedML, replays are an efficient accelerated storage format for data that support both static and dynamic (changing/growing) datasets.**
 
@@ -654,7 +654,7 @@ python Run.py Env=Datasets.Suites.SuperMario.SuperMario suite=SuperMario task_na
 ```
 
 <p align="left">
-<img src="https://github.com/AGI-init/UnifiedML/assets/92597756/690507b5-c7c1-46c9-9caa-e286df97f081" width="180"/>
+<img src="https://github.com/AGI-init/Assets/assets/92597756/80616c94-831c-45a1-9f22-8e3fff732162" width="180"/>
 <br><i>Mario trained via DQN.</i>
 </p>
 
@@ -903,7 +903,7 @@ python Run.py task=atari/pong,atari/breakout -m
 
 The results are reported for all 26 games and 3 different agents:
 
-<img width="40%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML/assets/92597756/428ba6af-1e63-4d12-8940-1dda834f283b">
+<img width="40%" alt="flowchart" src="https://github.com/AGI-init/Assets/assets/92597756/cabbe520-249e-4f7c-abf5-47a23b1dfc17">
 
 <details>
 <summary>
@@ -911,13 +911,13 @@ Click here to see per-task results.
 </summary>
 <br>
 
-<img width="80%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML/assets/92597756/bc5e1281-56ee-4ed3-a2df-548588107249">
+<img width="80%" alt="flowchart" src="https://github.com/AGI-init/Assets/assets/92597756/7c79e819-e8b5-4149-a076-219fd3c65497">
 
 </details>
 
 We found these results to be pretty stable across a range of exploration rates as well:
 
-<img width="60%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML/assets/92597756/8b2353ef-2b9f-4897-bbee-153ee23a54cf">
+<img width="60%" alt="flowchart" src="https://github.com/AGI-init/Assets/assets/92597756/633a805d-a58c-44a0-b0e8-0b97136ddc02">
 
 Each time point averages over 10 evaluation episodes (and 26 games).
 
@@ -935,7 +935,7 @@ The simplest way to do DCGAN is to use the DCGAN architecture:
 python Run.py task=classify/celeba generate=true Discriminator=DCGAN.Discriminator Generator=DCGAN.Generator train_steps=50000
 ```
 
-<img width="40%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML/assets/92597756/a0449cd5-7b0c-4534-80be-bfc73004d55e">
+<img width="40%" alt="flowchart" src="https://github.com/AGI-init/Assets/assets/92597756/16a6eca0-10b1-4081-8903-952e1a5680d2">
 
 We can then improve the results, and speed up training tenfold, by modifying the hyperparameters:
 
@@ -943,7 +943,7 @@ We can then improve the results, and speed up training tenfold, by modifying the
 python Run.py task=classify/celeba generate=true Discriminator=DCGAN.Discriminator Generator=DCGAN.Generator z_dim=100 Aug=Identity Optim=Adam '+optim.betas=[0.5, 0.999]' lr=2e-4 +agent.num_critics=1 train_steps=5000
 ```
 
-<img width="60%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML/assets/92597756/0f4e3112-0062-4f8d-8842-200ca377866a">
+<img width="60%" alt="flowchart" src="https://github.com/AGI-init/Assets/assets/92597756/c149933e-23a3-4f39-a0cf-996b7c5bb2d9">
 
 </details>
 
@@ -955,7 +955,7 @@ Then we frame actions as "predictions" in supervised learning. We can even augme
 
 For generative modeling, well, it turns out that the difference between a Generator-Discriminator and Actor-Critic is rather nominal.
 
-<img width="80%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML/assets/92597756/44885fe8-0cb2-404a-b378-e9fbec30e60e">
+<img width="80%" alt="flowchart" src="https://github.com/AGI-init/Assets/assets/92597756/62919357-3450-4340-b2ea-bb7b9c91d2d5">
 
 # :mortar_board: Pedagogy and Research
 
