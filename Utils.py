@@ -56,14 +56,17 @@ def init(args):
 
 
 # Format path names
-# e.g. "Checkpoints/Agents.DQNAgent" -> "Checkpoints/DQNAgent"
-OmegaConf.register_new_resolver("format", lambda name: name.split('.')[-1])
+try:
+    # e.g. "Checkpoints/Agents.DQNAgent" -> "Checkpoints/DQNAgent"
+    OmegaConf.register_new_resolver("format", lambda name: name.split('.')[-1])
 
-# Allow recipes config to accept objects as args
-OmegaConf.register_new_resolver("allow_objects", lambda config: config._set_flag("allow_objects", True))
+    # Allow recipes config to accept objects as args
+    OmegaConf.register_new_resolver("allow_objects", lambda config: config._set_flag("allow_objects", True))
 
-# A boolean "not" operation for config
-OmegaConf.register_new_resolver("not", lambda bool: not bool)
+    # A boolean "not" operation for config
+    OmegaConf.register_new_resolver("not", lambda bool: not bool)
+except ValueError:
+    pass
 
 
 # Saves model + args + selected attributes
@@ -100,6 +103,7 @@ def load(path, device='cuda', args=None, preserve=(), distributed=False, attr=''
 
     # Load model's params
     model.load_state_dict(to_load['state_dict'], strict=False)
+    model.device = device
 
     # Load saved attributes as well
     for key in to_load:
