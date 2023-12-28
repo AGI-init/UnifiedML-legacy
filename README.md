@@ -1,4 +1,4 @@
-![UnifiedMLBanner](https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/dfdfba35-064f-4749-a8f8-081dda770e79)
+![UnifiedMLBanner](https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288066-dfdfba35-064f-4749-a8f8-081dda770e79.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233258Z&X-Amz-Expires=300&X-Amz-Signature=ed7701b4e1149bee5a60e03ac318bdd10ac371d9d0e4e28f3e9efbe24386df07&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324)
 
 ### Quick Links
 
@@ -24,7 +24,7 @@ Defaults:
 
 Plots, logs, generated images, and videos are automatically stored in: ```./Benchmarking```.
 
-![ApeMan](https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/761aaa53-3c90-46ee-a12e-b2e7a6302a04)
+![ApeMan](https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293290438-16d38819-c0bc-495d-a509-702fdf49b8d6.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T234241Z&X-Amz-Expires=300&X-Amz-Signature=6e476fb9a3afd0de1be20666bafc4c3d983417a06b35481f019a85259d50a0f7&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324)
 
 Welcome ye, weary Traveller.
 
@@ -99,7 +99,7 @@ conda activate ML
 ## 1. Atari Arcade
 
 <p align="left">
-<img src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/21c4643f-70c9-4f1a-a724-6404f93c1508" width="320">
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288279-21c4643f-70c9-4f1a-a724-6404f93c1508.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233438Z&X-Amz-Expires=300&X-Amz-Signature=bd4c0d26c8ea644fda8a27e4ff98dee69223b84f260837ff64d11f4da5db523e&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324" width="320">
 <br><i>A collection of retro Atari games.</i>
 </p>
 
@@ -122,7 +122,7 @@ Comes pre-installed! For any issues, consult the [DMC repo](https://github.com/d
 <p align="left">
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=rAai4QzcYbs" target="_blank"><i>:arrow_forward: Click to play</i></a><br>
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=rAai4QzcYbs" target="_blank">
-<img src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/04781784-9f38-4efa-a9c8-466827a74ea7" alt="Play video" width="310" />
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288427-04781784-9f38-4efa-a9c8-466827a74ea7.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233454Z&X-Amz-Expires=300&X-Amz-Signature=dbb9e337dac85e4e52e3bcd17044ad16a17e62e6d6e85cee185fdb725a5dd61c&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324" alt="Play video" width="310" />
 </a>
 <br><i>Video of different tasks in action.</i>
 </p>
@@ -131,7 +131,7 @@ Comes pre-installed! For any issues, consult the [DMC repo](https://github.com/d
 
 <p align="left">
 
-<img src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/32648461-e8a7-4b55-a2d0-6b7eb23b23cb" width="320">
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288512-32648461-e8a7-4b55-a2d0-6b7eb23b23cb.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233520Z&X-Amz-Expires=300&X-Amz-Signature=12c6f18fa723969c47a21e484a8fde3d17b3b131c1e9755c548b46559417613b&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324" width="320">
 <br><i>Eight different ladybug species in the iNaturalist dataset.</i>
 
 </p>
@@ -212,7 +212,7 @@ Save videos with ```vlog=true```.
 :clapper: :movie_camera: -> ```Benchmarking/<experiment>/<agent>/<suite>/<task>_<seed>_Video_Image/```
 
 <p>
-<img src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/b7f64382-606d-4585-8f03-04c363cf09d6" width="64" height="84"/>
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288626-b7f64382-606d-4585-8f03-04c363cf09d6.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233551Z&X-Amz-Expires=300&X-Amz-Signature=bf3d635b77339b19b6bb762ff0eba4176b4c3d1d3d18002374ef7ba16b1238c3&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324" width="64" height="84"/>
 </p>
 
 Check out [args.yaml](Hyperparams/args.yaml) for the full array of configurable options available, including
@@ -312,7 +312,7 @@ python Run.py task=classify/mnist generate=true
 ```
 
 <p align="left">
-<img src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/adbba097-b118-4091-a8b6-54fd1d4a0735" width="180">
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288683-adbba097-b118-4091-a8b6-54fd1d4a0735.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233602Z&X-Amz-Expires=300&X-Amz-Signature=429017d0ce6276af3cc8619e677168a33978ef9101aa346b2cb6374f19b867f3&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324" width="180">
 <br><i>Synthesized MNIST images, conjured up and imagined by a simple MLP.</i>
 </p>
 
@@ -397,7 +397,7 @@ Click here to learn more about replays
 </summary>
 <br>
 
-<img width="25%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/815d59ab-63e8-4c5e-9203-ebfbb87ef9a5"><br><br>
+<img width="25%" alt="flowchart" src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288733-815d59ab-63e8-4c5e-9203-ebfbb87ef9a5.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233615Z&X-Amz-Expires=300&X-Amz-Signature=24c96a3b60891638cbe143458effc5513cdea49021bd9606a64e6d7771ad024e&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324"><br><br>
 
 **In UnifiedML, replays are an efficient accelerated storage format for data that support both static and dynamic (changing/growing) datasets.**
 
@@ -654,7 +654,7 @@ python Run.py Env=Datasets.Suites.SuperMario.SuperMario suite=SuperMario task_na
 ```
 
 <p align="left">
-<img src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/a9554164-4460-4a10-ad7b-fdae242e116d" width="180"/>
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288824-a9554164-4460-4a10-ad7b-fdae242e116d.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233642Z&X-Amz-Expires=300&X-Amz-Signature=5671696ab3b6da75279a6574c5e0d26acce990545443f3ef9057b1fbb42c0492&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324" width="180"/>
 <br><i>Mario trained via DQN.</i>
 </p>
 
@@ -903,7 +903,7 @@ python Run.py task=atari/pong,atari/breakout -m
 
 The results are reported for all 26 games and 3 different agents:
 
-<img width="40%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/ac50932a-a25c-46af-9d6b-c8cc13d1a0e7">
+<img width="40%" alt="flowchart" src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293288956-ac50932a-a25c-46af-9d6b-c8cc13d1a0e7.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233659Z&X-Amz-Expires=300&X-Amz-Signature=6a085da98e3535e8137a0365ce0068e7c2f413cb26f56b5f1fb0ee2fc166e312&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324">
 
 <details>
 <summary>
@@ -911,13 +911,13 @@ Click here to see per-task results.
 </summary>
 <br>
 
-<img width="80%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/75688e0b-ef99-4909-afe7-a592ad030e3b">
+<img width="80%" alt="flowchart" src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293289064-75688e0b-ef99-4909-afe7-a592ad030e3b.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233724Z&X-Amz-Expires=300&X-Amz-Signature=d10bc42caaabba4a9ccced294d91eb571f62b9892c97a1714edb9e9b38921ba7&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324">
 
 </details>
 
 We found these results to be pretty stable across a range of exploration rates as well:
 
-<img width="60%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/517a6aff-7a44-4f6d-af21-fdbee8a27684">
+<img width="60%" alt="flowchart" src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293289135-517a6aff-7a44-4f6d-af21-fdbee8a27684.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233746Z&X-Amz-Expires=300&X-Amz-Signature=cb5cca3b26914f92d778c87445751dd3dc9d35e19d9e39b606d3445895bfc7c1&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324">
 
 Each time point averages over 10 evaluation episodes (and 26 games).
 
@@ -935,7 +935,7 @@ The simplest way to do DCGAN is to use the DCGAN architecture:
 python Run.py task=classify/celeba generate=true Discriminator=DCGAN.Discriminator Generator=DCGAN.Generator train_steps=50000
 ```
 
-<img width="40%" alt="flowchart" src="https://github.com/AGI-init/Logos/assets/92597756/16a6eca0-10b1-4081-8903-952e1a5680d2">
+<img width="40%" alt="flowchart" src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/237768377-16a6eca0-10b1-4081-8903-952e1a5680d2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T233757Z&X-Amz-Expires=300&X-Amz-Signature=ea407beaf0c5771be10570a6ca165913c3158fc48b4d71573b7a3eb52d544f23&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=639550036">
 
 We can then improve the results, and speed up training tenfold, by modifying the hyperparameters:
 
@@ -943,7 +943,7 @@ We can then improve the results, and speed up training tenfold, by modifying the
 python Run.py task=classify/celeba generate=true Discriminator=DCGAN.Discriminator Generator=DCGAN.Generator z_dim=100 Aug=Identity Optim=Adam '+optim.betas=[0.5, 0.999]' lr=2e-4 +agent.num_critics=1 train_steps=5000
 ```
 
-<img width="60%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/66a28936-9234-4b76-8ea2-90cef0bd60e6">
+<img width="60%" alt="flowchart" src="https://github-production-user-asset-6210df.s3.amazonaws.com/92597756/293290374-44d20122-a13e-47b3-b7da-aea273e3631e.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20231228%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231228T234122Z&X-Amz-Expires=300&X-Amz-Signature=6418064eb6fef1b28eee3f81d3ffc26150169e97136c6887e30ca6abf3cbf2a9&X-Amz-SignedHeaders=host&actor_id=92597756&key_id=0&repo_id=532959324">
 
 </details>
 
@@ -955,7 +955,7 @@ Then we frame actions as "predictions" in supervised learning. We can even augme
 
 For generative modeling, well, it turns out that the difference between a Generator-Discriminator and Actor-Critic is rather nominal.
 
-<img width="80%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/fe80c2ab-4629-48d8-a445-a18424cf3268">
+<img width="80%" alt="flowchart" src="https://github.com/AGI-init/UnifiedML-legacy/assets/92597756/6f1676b6-2313-4d82-91d5-846bc1a5c913">
 
 # :mortar_board: Pedagogy and Research
 
