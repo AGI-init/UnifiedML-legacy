@@ -219,7 +219,7 @@ Check out [args.yaml](Hyperparams/args.yaml) for the full array of configurable 
 * N-step rewards (```nstep=```)
 * Frame stack (```frame_stack=```)
 * Action repeat (```action_repeat=```)
-* & more, with [per-task](Hyperparams/task) defaults in ```/Hyperparams/task``` — please [share your hyperparams](https://github.com/agi-init/UnifiedML/discussions/11) if you discover new or better ones!
+* & more, with [per-task](Hyperparams/task) defaults in ```/Hyperparams/task``` — please [share your hyperparams](https://github.com/agi-init/UnifiedML-legacy/discussions/11) if you discover new or better ones!
 
 
 &#9432; If you'd like to **discretize** a continuous domain, pass in ```discrete=true``` and specify the number of discrete bins per action dimension via ```num_actions=```. If you'd like to **continuous-ize** a discrete domain, pass in ```discrete=false```. *Action space conversions are experimental*.
@@ -759,7 +759,7 @@ If you've defined a ```.yaml``` file called ```my_recipe.yaml``` for example, yo
 python Run.py task=my_recipe
 ```
 
-Please [share your recipes](https://github.com/agi-init/UnifiedML/discussions/11) in our Discussions page if you discover new or better hyperparams for a problem.
+Please [share your recipes](https://github.com/agi-init/UnifiedML-legacy/discussions/11) in our Discussions page if you discover new or better hyperparams for a problem.
 
 **Recipes can also be defined temporarily via command line without saving them to .yaml files.**
 
@@ -881,7 +881,7 @@ We have released our slide deck!
 
 Feel free to use our UnifiedML templates and figures in your work, citing [us](#pen-paper--citing) of course.
 
-**Open-source research for minimal redundancy and optimal standardization is the way to go, balancing privacy and de-centrality, and streamlining successive works that depend on ours in good faith. Post your own designs and assets [here](https://github.com/agi-init/UnifiedML/discussions/12) in the discussion board. Read the rules to keep citations and credit attribution fair.**
+**Open-source research for minimal redundancy and optimal standardization is the way to go, balancing privacy and de-centrality, and streamlining successive works that depend on ours in good faith. Post your own designs and assets [here](https://github.com/agi-init/UnifiedML-legacy/discussions/12) in the discussion board. Read the rules to keep citations and credit attribution fair.**
 
 </details>
 
