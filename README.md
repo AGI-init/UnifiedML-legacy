@@ -42,7 +42,7 @@ For detailed documentation, [see our :scroll:](https://docs.google.com/presentat
 @article{UnifiedML,
   title   = {UnifiedML: A Unified Framework For Intelligence Training},
   author  = {Sam Lerman, Chenliang Xu},
-  howpublished = {https://github.com/AGI-init/UnifiedML},
+  howpublished = {https://github.com/AGI-init/UnifiedML-legacy},
   year    = {2023}
 }
 ```
@@ -66,8 +66,8 @@ Let's get to business.
 ## 1. Clone The Repo
 
 ```console
-git clone git@github.com:agi-init/UnifiedML.git
-cd UnifiedML
+git clone git@github.com:agi-init/UnifiedML-legacy.git
+cd UnifiedML-legacy
 ```
 
 ## 2. Gemme Some Dependencies
